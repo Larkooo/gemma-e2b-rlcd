@@ -12,7 +12,7 @@ from .json_scoring import candidate_fields, compile_field
 class JSONMLXBackend(CachedMLXBackend):
     probability_source = "restricted_json_value_likelihoods"
 
-    def _sequence_scores(self, prefix_cache, prefix_tokens, fields):
+    def _sequence_scores(self, prefix_cache, prefix_tokens, fields, on_scores=None):
         """Teacher-force every complete candidate in bounded GPU batches.
 
         Score all tokens, including string terminators. Shared first tokens and
@@ -26,6 +26,7 @@ class JSONMLXBackend(CachedMLXBackend):
         ]
         values = {index: [None] * len(field.candidates) for index, field in fields}
         batches = []
+        output = {}
         for start in range(0, len(jobs), self.branch_batch_size):
             batch = jobs[start : start + self.branch_batch_size]
             suffixes = [prefix + candidate[:-1] for _, _, prefix, candidate in batch]
@@ -53,15 +54,20 @@ class JSONMLXBackend(CachedMLXBackend):
             for (field_index, choice, _, _), total in zip(batch, totals, strict=True):
                 values[field_index][choice] = float(total.item())
             batches.append(len(batch))
-        output = {}
-        for index, field in fields:
-            scores = tuple(values[index])
-            mass = min(1.0, sum(math.exp(value) for value in scores))
-            length = prefix_tokens + len(field.prefix) + max(map(len, field.candidates)) - 1
-            output[index] = TokenScores(scores, mass, length)
+            completed = []
+            for index, field in fields:
+                if index in output or any(value is None for value in values[index]):
+                    continue
+                scores = tuple(values[index])
+                mass = min(1.0, sum(math.exp(value) for value in scores))
+                length = prefix_tokens + len(field.prefix) + max(map(len, field.candidates)) - 1
+                output[index] = TokenScores(scores, mass, length)
+                completed.append((index, output[index]))
+            if on_scores is not None and completed:
+                on_scores(completed)
         return output, batches
 
-    def score_questions(self, state, questions):
+    def score_questions(self, state, questions, on_scores=None):
         started = time.perf_counter()
         prompt, inputs = prepare_generation(self, state, questions)
         fields = [
@@ -102,7 +108,15 @@ class JSONMLXBackend(CachedMLXBackend):
             simple = PreparedState(
                 inputs, [list(field.prefix) for _, field in single], prefix_tokens
             )
-            results = self.branches(simple, prefix_cache, requests)
+
+            def completed_batch(start, results):
+                on_scores(
+                    [(single[start + offset][0], score) for offset, score in enumerate(results)]
+                )
+
+            results = self.branches(
+                simple, prefix_cache, requests, on_batch=completed_batch if on_scores else None
+            )
             batches.extend(self.last_stats["branch_batch_sizes"])
             for (index, _), result in zip(single, results, strict=True):
                 scores[index] = result
@@ -114,7 +128,7 @@ class JSONMLXBackend(CachedMLXBackend):
         candidate_batches = []
         if multiple:
             results, candidate_batches = self._sequence_scores(
-                prefix_cache, prefix_tokens, multiple
+                prefix_cache, prefix_tokens, multiple, on_scores=on_scores
             )
             for index, result in results.items():
                 scores[index] = result

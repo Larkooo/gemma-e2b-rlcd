@@ -178,3 +178,25 @@ def test_batch_result_count_is_checked():
 
     with pytest.raises(ValueError, match="wrong number of question results"):
         DecisionEngine(Broken([])).system_one(State(text="test"), {"test": Noul("True?")})
+
+
+def test_streamed_decisions_arrive_before_later_batches_and_match_final_answers():
+    seen = []
+
+    class Streaming(StubBackend):
+        def score_questions(self, state, questions, on_scores=None):
+            scores = [TokenScores((2.0, 0.0), 0.8, 50), TokenScores((0.0, 2.0), 0.8, 50)]
+            on_scores([(0, scores[0])])
+            assert len(seen) == 1
+            on_scores([(1, scores[1])])
+            return scores
+
+    result = DecisionEngine(Streaming([])).system_one(
+        State(text="evidence"),
+        {"visible": Independent("Which?", {"cat": "Cat", "dog": "Dog"})},
+        on_answer=lambda path, answer: seen.append((path, answer)),
+    )
+    assert [path for path, _ in seen] == [("visible", "cat"), ("visible", "dog")]
+    assert result["answers"]["visible"]["probabilities"] == {
+        path[1]: answer["probabilities"]["yes"] for path, answer in seen
+    }

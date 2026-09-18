@@ -44,3 +44,7 @@ The project's MIT license applies to project code and synthetic examples, not th
 ## Demo typography
 
 The demo video and poster use IBM Plex Sans, licensed under the SIL Open Font License. The license is retained in [docs/assets/Plex-OFL.txt](docs/assets/Plex-OFL.txt).
+
+## Visual demo photograph
+
+`gemma_rlcd/static/sample-street.jpg` is “Times Square (New York City)” by ISO Legacy, from [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Times_Square_(New_York_City).jpg), dedicated under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/). The original photograph is included without modification.

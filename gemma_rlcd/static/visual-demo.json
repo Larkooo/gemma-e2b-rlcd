@@ -1,0 +1,677 @@
+{
+  "title": "Visual inventory",
+  "instructions": "Evaluate only visible evidence. For video, a check is true if visible in at least one sampled frame. A spoken mention or a printed picture of an object does not establish that the real object is present. If a check is not visually established, answer false.",
+  "groups": [
+    {
+      "id": "people",
+      "name": "People & activity",
+      "checks": [
+        {
+          "id": "person",
+          "label": "Person",
+          "description": "A person is visible"
+        },
+        {
+          "id": "crowd",
+          "label": "Crowd",
+          "description": "At least ten people are visible"
+        },
+        {
+          "id": "walking",
+          "label": "Walking",
+          "description": "A person is visibly walking"
+        },
+        {
+          "id": "sitting",
+          "label": "Sitting",
+          "description": "A person is sitting"
+        },
+        {
+          "id": "standing",
+          "label": "Standing",
+          "description": "A person is standing"
+        },
+        {
+          "id": "running",
+          "label": "Running",
+          "description": "A person is running"
+        },
+        {
+          "id": "cycling",
+          "label": "Cycling",
+          "description": "A person is riding a bicycle"
+        },
+        {
+          "id": "carrying_bag",
+          "label": "Carrying bag",
+          "description": "A person is carrying a bag"
+        },
+        {
+          "id": "backpack",
+          "label": "Backpack",
+          "description": "A person is wearing a backpack"
+        },
+        {
+          "id": "handbag",
+          "label": "Handbag",
+          "description": "A handbag is visible"
+        },
+        {
+          "id": "hat",
+          "label": "Hat",
+          "description": "A person is wearing a hat or cap"
+        },
+        {
+          "id": "sunglasses",
+          "label": "Sunglasses",
+          "description": "A person is wearing sunglasses"
+        },
+        {
+          "id": "umbrella",
+          "label": "Umbrella",
+          "description": "A person is holding an umbrella"
+        },
+        {
+          "id": "phone_in_hand",
+          "label": "Phone in hand",
+          "description": "A person is holding a phone"
+        },
+        {
+          "id": "using_camera",
+          "label": "Using camera",
+          "description": "A person is using a camera"
+        },
+        {
+          "id": "raised_hand",
+          "label": "Raised hand",
+          "description": "A person has a raised hand"
+        },
+        {
+          "id": "waving",
+          "label": "Waving",
+          "description": "A person is waving"
+        },
+        {
+          "id": "pointing",
+          "label": "Pointing",
+          "description": "A person is pointing"
+        },
+        {
+          "id": "eating",
+          "label": "Eating",
+          "description": "A person is eating"
+        },
+        {
+          "id": "drinking",
+          "label": "Drinking",
+          "description": "A person is drinking"
+        },
+        {
+          "id": "stroller",
+          "label": "Stroller",
+          "description": "A baby stroller is visible"
+        },
+        {
+          "id": "walking_dog",
+          "label": "Walking dog",
+          "description": "A person is walking a dog on a leash"
+        },
+        {
+          "id": "uniform",
+          "label": "Uniform",
+          "description": "A person is wearing a uniform"
+        },
+        {
+          "id": "helmet",
+          "label": "Helmet",
+          "description": "A person is wearing a helmet"
+        },
+        {
+          "id": "high_vis_vest",
+          "label": "High vis vest",
+          "description": "A high-visibility safety vest is visible"
+        },
+        {
+          "id": "face_mask",
+          "label": "Face mask",
+          "description": "A person is wearing a face mask"
+        },
+        {
+          "id": "red_clothing",
+          "label": "Red clothing",
+          "description": "Red clothing is visible"
+        },
+        {
+          "id": "blue_clothing",
+          "label": "Blue clothing",
+          "description": "Blue clothing is visible"
+        },
+        {
+          "id": "white_clothing",
+          "label": "White clothing",
+          "description": "White clothing is visible"
+        },
+        {
+          "id": "striped_clothing",
+          "label": "Striped clothing",
+          "description": "Striped clothing is visible"
+        },
+        {
+          "id": "group_interaction",
+          "label": "Group interaction",
+          "description": "Two people are visibly interacting"
+        },
+        {
+          "id": "person_lying_down",
+          "label": "Person lying down",
+          "description": "A person is lying down"
+        }
+      ]
+    },
+    {
+      "id": "objects",
+      "name": "Vehicles & objects",
+      "checks": [
+        {
+          "id": "car",
+          "label": "Car",
+          "description": "A car is visible"
+        },
+        {
+          "id": "bus",
+          "label": "Bus",
+          "description": "A bus is visible"
+        },
+        {
+          "id": "bicycle",
+          "label": "Bicycle",
+          "description": "A bicycle is visible"
+        },
+        {
+          "id": "motorcycle",
+          "label": "Motorcycle",
+          "description": "A motorcycle is visible"
+        },
+        {
+          "id": "truck",
+          "label": "Truck",
+          "description": "A truck is visible"
+        },
+        {
+          "id": "taxi",
+          "label": "Taxi",
+          "description": "A marked taxi is visible"
+        },
+        {
+          "id": "boat",
+          "label": "Boat",
+          "description": "A boat is visible"
+        },
+        {
+          "id": "train",
+          "label": "Train",
+          "description": "A train is visible"
+        },
+        {
+          "id": "traffic_light",
+          "label": "Traffic light",
+          "description": "A traffic light is visible"
+        },
+        {
+          "id": "street_sign",
+          "label": "Street sign",
+          "description": "A street sign is visible"
+        },
+        {
+          "id": "billboard",
+          "label": "Billboard",
+          "description": "A large advertising billboard is visible"
+        },
+        {
+          "id": "bench",
+          "label": "Bench",
+          "description": "A bench is visible"
+        },
+        {
+          "id": "chair",
+          "label": "Chair",
+          "description": "A chair is visible"
+        },
+        {
+          "id": "table",
+          "label": "Table",
+          "description": "A table is visible"
+        },
+        {
+          "id": "trash_bin",
+          "label": "Trash bin",
+          "description": "A trash bin is visible"
+        },
+        {
+          "id": "traffic_cone",
+          "label": "Traffic cone",
+          "description": "A traffic cone is visible"
+        },
+        {
+          "id": "bollard",
+          "label": "Bollard",
+          "description": "A bollard or short street barrier post is visible"
+        },
+        {
+          "id": "fence",
+          "label": "Fence",
+          "description": "A fence is visible"
+        },
+        {
+          "id": "streetlamp",
+          "label": "Streetlamp",
+          "description": "A streetlamp is visible"
+        },
+        {
+          "id": "shop_window",
+          "label": "Shop window",
+          "description": "A shop display window is visible"
+        },
+        {
+          "id": "door",
+          "label": "Door",
+          "description": "A door is visible"
+        },
+        {
+          "id": "stairs",
+          "label": "Stairs",
+          "description": "Stairs are visible"
+        },
+        {
+          "id": "ramp",
+          "label": "Ramp",
+          "description": "A ramp is visible"
+        },
+        {
+          "id": "clock",
+          "label": "Clock",
+          "description": "A clock face is visible"
+        },
+        {
+          "id": "flag",
+          "label": "Flag",
+          "description": "A flag is visible"
+        },
+        {
+          "id": "food_stall",
+          "label": "Food stall",
+          "description": "A food stall or food cart is visible"
+        },
+        {
+          "id": "bottle",
+          "label": "Bottle",
+          "description": "A bottle is visible"
+        },
+        {
+          "id": "cup",
+          "label": "Cup",
+          "description": "A drinking cup is visible"
+        },
+        {
+          "id": "suitcase",
+          "label": "Suitcase",
+          "description": "A suitcase is visible"
+        },
+        {
+          "id": "screen",
+          "label": "Screen",
+          "description": "An electronic display screen is visible"
+        },
+        {
+          "id": "fire_hydrant",
+          "label": "Fire hydrant",
+          "description": "A fire hydrant is visible"
+        },
+        {
+          "id": "scaffolding",
+          "label": "Scaffolding",
+          "description": "Construction scaffolding is visible"
+        }
+      ]
+    },
+    {
+      "id": "nature",
+      "name": "Animals & environment",
+      "checks": [
+        {
+          "id": "dog",
+          "label": "Dog",
+          "description": "A real dog is visible"
+        },
+        {
+          "id": "cat",
+          "label": "Cat",
+          "description": "A real cat is visible"
+        },
+        {
+          "id": "bird",
+          "label": "Bird",
+          "description": "A real bird is visible"
+        },
+        {
+          "id": "horse",
+          "label": "Horse",
+          "description": "A real horse is visible"
+        },
+        {
+          "id": "cow",
+          "label": "Cow",
+          "description": "A real cow is visible"
+        },
+        {
+          "id": "sheep",
+          "label": "Sheep",
+          "description": "A real sheep is visible"
+        },
+        {
+          "id": "goat",
+          "label": "Goat",
+          "description": "A real goat is visible"
+        },
+        {
+          "id": "skunk",
+          "label": "Skunk",
+          "description": "A real skunk is visible"
+        },
+        {
+          "id": "rabbit",
+          "label": "Rabbit",
+          "description": "A real rabbit is visible"
+        },
+        {
+          "id": "squirrel",
+          "label": "Squirrel",
+          "description": "A real squirrel is visible"
+        },
+        {
+          "id": "duck",
+          "label": "Duck",
+          "description": "A real duck is visible"
+        },
+        {
+          "id": "fish",
+          "label": "Fish",
+          "description": "A real fish is visible"
+        },
+        {
+          "id": "tree",
+          "label": "Tree",
+          "description": "A tree is visible"
+        },
+        {
+          "id": "grass",
+          "label": "Grass",
+          "description": "Grass is visible"
+        },
+        {
+          "id": "flowers",
+          "label": "Flowers",
+          "description": "Flowers are visible"
+        },
+        {
+          "id": "potted_plant",
+          "label": "Potted plant",
+          "description": "A potted plant is visible"
+        },
+        {
+          "id": "bush",
+          "label": "Bush",
+          "description": "A bush is visible"
+        },
+        {
+          "id": "mountain",
+          "label": "Mountain",
+          "description": "A mountain is visible"
+        },
+        {
+          "id": "water",
+          "label": "Water",
+          "description": "An exposed body of water is visible"
+        },
+        {
+          "id": "beach",
+          "label": "Beach",
+          "description": "A sandy beach is visible"
+        },
+        {
+          "id": "snow",
+          "label": "Snow",
+          "description": "Snow is visible"
+        },
+        {
+          "id": "rain",
+          "label": "Rain",
+          "description": "Falling rain is visible"
+        },
+        {
+          "id": "clouds",
+          "label": "Clouds",
+          "description": "Clouds are visible"
+        },
+        {
+          "id": "blue_sky",
+          "label": "Blue sky",
+          "description": "Blue sky is visible"
+        },
+        {
+          "id": "sun",
+          "label": "Sun",
+          "description": "The sun itself is visible"
+        },
+        {
+          "id": "moon",
+          "label": "Moon",
+          "description": "The moon itself is visible"
+        },
+        {
+          "id": "smoke",
+          "label": "Smoke",
+          "description": "Smoke is visible"
+        },
+        {
+          "id": "fire",
+          "label": "Fire",
+          "description": "Flames are visible"
+        },
+        {
+          "id": "rocks",
+          "label": "Rocks",
+          "description": "Natural rocks are visible"
+        },
+        {
+          "id": "fallen_leaves",
+          "label": "Fallen leaves",
+          "description": "Fallen leaves are visible on the ground"
+        },
+        {
+          "id": "puddle",
+          "label": "Puddle",
+          "description": "A puddle is visible"
+        },
+        {
+          "id": "animal_group",
+          "label": "Animal group",
+          "description": "Two or more real animals are visible"
+        }
+      ]
+    },
+    {
+      "id": "scene",
+      "name": "Scene & composition",
+      "checks": [
+        {
+          "id": "outdoors",
+          "label": "Outdoors",
+          "description": "The scene is outdoors"
+        },
+        {
+          "id": "indoors",
+          "label": "Indoors",
+          "description": "The scene is indoors"
+        },
+        {
+          "id": "street",
+          "label": "Street",
+          "description": "A street or road is visible"
+        },
+        {
+          "id": "sidewalk",
+          "label": "Sidewalk",
+          "description": "A sidewalk is visible"
+        },
+        {
+          "id": "crosswalk",
+          "label": "Crosswalk",
+          "description": "A marked pedestrian crossing is visible"
+        },
+        {
+          "id": "buildings",
+          "label": "Buildings",
+          "description": "Buildings are visible"
+        },
+        {
+          "id": "high_rise",
+          "label": "High rise",
+          "description": "A high-rise building is visible"
+        },
+        {
+          "id": "storefront",
+          "label": "Storefront",
+          "description": "A storefront is visible"
+        },
+        {
+          "id": "park",
+          "label": "Park",
+          "description": "The setting is visibly a park"
+        },
+        {
+          "id": "kitchen",
+          "label": "Kitchen",
+          "description": "The setting is visibly a kitchen"
+        },
+        {
+          "id": "office",
+          "label": "Office",
+          "description": "The setting is visibly an office"
+        },
+        {
+          "id": "living_room",
+          "label": "Living room",
+          "description": "The setting is visibly a living room"
+        },
+        {
+          "id": "daylight",
+          "label": "Daylight",
+          "description": "The scene is lit by daylight"
+        },
+        {
+          "id": "night",
+          "label": "Night",
+          "description": "The scene is visibly at night"
+        },
+        {
+          "id": "artificial_lighting",
+          "label": "Artificial lighting",
+          "description": "Artificial lights are visibly illuminating the scene"
+        },
+        {
+          "id": "shadows",
+          "label": "Shadows",
+          "description": "Distinct cast shadows are visible"
+        },
+        {
+          "id": "reflections",
+          "label": "Reflections",
+          "description": "Reflections are visible"
+        },
+        {
+          "id": "wet_ground",
+          "label": "Wet ground",
+          "description": "The ground appears wet"
+        },
+        {
+          "id": "visible_text",
+          "label": "Visible text",
+          "description": "Readable or recognizable text is visible"
+        },
+        {
+          "id": "advertising",
+          "label": "Advertising",
+          "description": "Advertising is visible"
+        },
+        {
+          "id": "road_markings",
+          "label": "Road markings",
+          "description": "Painted road markings are visible"
+        },
+        {
+          "id": "red_dominant_area",
+          "label": "Red dominant area",
+          "description": "A large red area is visible"
+        },
+        {
+          "id": "blue_dominant_area",
+          "label": "Blue dominant area",
+          "description": "A large blue area is visible"
+        },
+        {
+          "id": "green_dominant_area",
+          "label": "Green dominant area",
+          "description": "A large green area is visible"
+        },
+        {
+          "id": "yellow_dominant_area",
+          "label": "Yellow dominant area",
+          "description": "A large yellow area is visible"
+        },
+        {
+          "id": "closeup",
+          "label": "Closeup",
+          "description": "The framing is a close-up view"
+        },
+        {
+          "id": "wide_view",
+          "label": "Wide view",
+          "description": "The framing shows a wide scene"
+        },
+        {
+          "id": "blur",
+          "label": "Blur",
+          "description": "Substantial image blur is visible"
+        },
+        {
+          "id": "occlusion",
+          "label": "Occlusion",
+          "description": "A main subject is partly hidden by another object"
+        },
+        {
+          "id": "dense_scene",
+          "label": "Dense scene",
+          "description": "Many distinct objects fill the scene"
+        },
+        {
+          "id": "clear_foreground",
+          "label": "Clear foreground",
+          "description": "A clear foreground subject is visible"
+        },
+        {
+          "id": "distant_background",
+          "label": "Distant background",
+          "description": "A distant background is visible"
+        }
+      ]
+    }
+  ],
+  "sample": {
+    "url": "/static/sample-street.jpg",
+    "name": "Times Square",
+    "author": "ISO Legacy",
+    "source": "https://commons.wikimedia.org/wiki/File:Times_Square_(New_York_City).jpg",
+    "license": "CC0 1.0"
+  }
+}

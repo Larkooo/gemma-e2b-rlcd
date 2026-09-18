@@ -216,7 +216,7 @@ class DecisionEngine:
     def decide(self, state: State, question: Question) -> dict:
         return self.system_one(state, {"answer": question})["answers"]["answer"]
 
-    def system_one(self, state: State, questions: Mapping[str, Question]) -> dict:
+    def system_one(self, state: State, questions: Mapping[str, Question], on_answer=None) -> dict:
         if not questions:
             raise ValueError("At least one question is required")
         jobs = []
@@ -257,8 +257,22 @@ class DecisionEngine:
                 jobs.append((question_id, child_id, child, criteria))
         question_score = getattr(self.backend, "score_questions", None)
         batch_score = getattr(self.backend, "score_batch", None)
+
+        def completed_scores(rows):
+            for index, score in rows:
+                question_id, child_id, question, criteria = jobs[index]
+                probabilities, diagnostics = self._distribution(criteria, score)
+                on_answer(
+                    (question_id,) if child_id is None else (question_id, child_id),
+                    self._answer(question, probabilities, diagnostics),
+                )
+
         if question_score is not None:
-            scores = question_score(state, questions)
+            scores = (
+                question_score(state, questions, on_scores=completed_scores)
+                if on_answer
+                else question_score(state, questions)
+            )
         elif batch_score is not None:
             scores = batch_score(state, requests)
         else:
@@ -267,6 +281,8 @@ class DecisionEngine:
             ]
         if len(scores) != len(jobs):
             raise ValueError("Backend returned the wrong number of question results")
+        if on_answer is not None and question_score is None:
+            completed_scores(list(enumerate(scores)))
         for (question_id, child_id, question, criteria), score in zip(jobs, scores, strict=True):
             probabilities, diagnostics = self._distribution(criteria, score)
             if child_id is None:

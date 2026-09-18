@@ -264,10 +264,10 @@ def test_independent_expansion_is_bounded():
         "labels": {
             "type": "independent",
             "instructions": "Check each",
-            "criteria": {str(i): "An option" for i in range(65)},
+            "criteria": {str(i): "An option" for i in range(129)},
         }
     }
-    with pytest.raises(ValueError, match="64 individual fields"):
+    with pytest.raises(ValueError, match="128 individual fields"):
         read_spec(json.dumps(spec))
 
 
@@ -442,3 +442,78 @@ def test_invalid_generated_answer_remains_visible_without_speedup_claim(playgrou
     assert data["comparison"]["agreement"]["animal"] is None
     assert data["comparison"]["normal"]["raw_text"] == "not json"
     assert data["answers"]["animal"]["choice"] == "cat"
+
+
+def test_visual_demo_has_128_distinct_checks_and_supports_each_size(playground):
+    client, backend, _ = playground
+    assert "One scene." in client.get("/demo").text
+    config = client.get("/static/visual-demo.json").json()
+    assert len(config["groups"]) == 4
+    for size in (32, 64, 128):
+        spec = {
+            "text": "scene",
+            "instructions": config["instructions"],
+            "questions": {
+                group["id"]: {
+                    "type": "independent",
+                    "instructions": "Which checks are visible?",
+                    "criteria": {
+                        check["id"]: check["description"] for check in group["checks"][: size // 4]
+                    },
+                }
+                for group in config["groups"]
+            },
+        }
+        response = client.post("/api/run", data={"spec": json.dumps(spec)})
+        assert response.status_code == 200, response.text
+        assert len(backend.calls[-1][1]) == size
+
+
+def test_streaming_comparison_orders_events_and_cleans_uploads(playground, monkeypatch):
+    from gemma_rlcd import comparison
+
+    client, _, directory = playground
+
+    def generate(backend, state, questions, on_token=None):
+        on_token('{"animal":', 1)
+        on_token('"cat"}', 2)
+        return {
+            "answers": {"animal": "cat"},
+            "raw_text": '{"animal":"cat"}',
+            "valid": True,
+            "error": None,
+            "inference_seconds": 1,
+            "output_tokens": 2,
+        }
+
+    monkeypatch.setattr(comparison, "generate_answers", generate)
+    response = client.post("/api/compare-stream", data={"spec": json.dumps(request_spec())})
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("application/x-ndjson")
+    events = [json.loads(line) for line in response.text.splitlines()]
+    assert [event["type"] for event in events[:2]] == ["accepted", "race_start"]
+    assert events[-1]["type"] == "complete"
+    assert [event["type"] for event in events if event.get("method") == "parallel"] == [
+        "phase_start",
+        "answer",
+        "phase_complete",
+    ]
+    assert [event["type"] for event in events if event.get("method") == "normal"] == [
+        "phase_start",
+        "token",
+        "token",
+        "phase_complete",
+    ]
+    assert next(event for event in events if event["type"] == "answer")["value"] == "cat"
+    assert events[-1]["result"]["comparison"]["normal"]["valid"]
+    assert events[-1]["result"]["comparison"]["methodology"]["execution"] == "concurrent_shared_gpu"
+    assert not client.get("/api/status").json()["busy"]
+    assert list(directory.iterdir()) == []
+
+
+def test_stream_validation_failure_releases_gpu_lock(playground):
+    client, _, directory = playground
+    response = client.post("/api/compare-stream", data={"spec": "{}"})
+    assert response.status_code == 400
+    assert not client.get("/api/status").json()["busy"]
+    assert list(directory.iterdir()) == []

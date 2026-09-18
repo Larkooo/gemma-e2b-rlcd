@@ -30,6 +30,8 @@ jobs:
           ruff check gemma_rlcd tests scripts
           ruff format --check gemma_rlcd tests scripts
           node --check gemma_rlcd/static/app.js
+          node --check gemma_rlcd/static/demo.js
+          node --test tests/test_demo.cjs
       - name: Run contract and web tests
         run: python -m pytest -q
         # MLX-only tests skip on Linux. Full model inference is a local check.

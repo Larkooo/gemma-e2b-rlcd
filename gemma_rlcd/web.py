@@ -11,9 +11,11 @@ from concurrent.futures import ThreadPoolExecutor
 from contextlib import asynccontextmanager
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from threading import Event
 
+from anyio import CancelScope
 from fastapi import FastAPI, Request
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from PIL import Image, ImageOps, UnidentifiedImageError
 from starlette.datastructures import UploadFile
@@ -104,8 +106,8 @@ def read_spec(encoded: str) -> tuple[dict, dict]:
     field_count = sum(
         len(q.criteria) if isinstance(q, Independent) else 1 for q in questions.values()
     )
-    if field_count > 64:
-        raise ValueError("At most 64 individual fields or independent labels can run together")
+    if field_count > 128:
+        raise ValueError("At most 128 individual fields or independent labels can run together")
     media = spec.get("media", [])
     if not isinstance(media, list) or len(media) > 10:
         raise ValueError("Attach at most 8 images, one audio clip, and one video")
@@ -119,6 +121,32 @@ def read_spec(encoded: str) -> tuple[dict, dict]:
     if counts["image"] > 8 or counts["audio"] > 1 or counts["video"] > 1:
         raise ValueError("Attach at most 8 images, one audio clip, and one video")
     return spec, questions
+
+
+async def read_upload(request: Request, directory: str):
+    async with request.form(max_files=10, max_fields=1, max_part_size=1024 * 1024) as form:
+        if set(form) - {"spec", "media"} or not isinstance(form.get("spec"), str):
+            raise ValueError("Submit a JSON spec and optional media attachments")
+        spec, questions = read_spec(form["spec"])
+        files = form.getlist("media")
+        if len(files) != len(spec.get("media", [])) or not all(
+            isinstance(file, UploadFile) for file in files
+        ):
+            raise ValueError("Attachment files do not match the request")
+        paths, total = [], 0
+        for index, file in enumerate(files):
+            suffix = Path(file.filename or "upload").suffix.lower()
+            if len(suffix) > 10 or not suffix.replace(".", "").isalnum():
+                suffix = ".bin"
+            path = Path(directory) / f"attachment-{index}{suffix}"
+            with path.open("wb") as output:
+                while chunk := await file.read(1024 * 1024):
+                    total += len(chunk)
+                    if total > MAX_UPLOAD_BYTES:
+                        raise ValueError("Attachments exceed the 200 MB total upload limit")
+                    output.write(chunk)
+            paths.append(path)
+        return spec, questions, paths
 
 
 def inspect_media(path: Path) -> dict:
@@ -240,6 +268,7 @@ class Runtime:
         self.pool = ThreadPoolExecutor(max_workers=1, thread_name_prefix="decision-model")
         self.lock = asyncio.Lock()
         self.backend = None
+        self.normal_backend = None
         self.error = None
         self.load_seconds = None
 
@@ -249,9 +278,13 @@ class Runtime:
             if self.factory is None:
                 from .json_backend import JSONMLXBackend
 
-                self.backend = JSONMLXBackend(self.model, branch_batch_size=8)
+                backend = JSONMLXBackend(self.model, branch_batch_size=8)
             else:
-                self.backend = self.factory()
+                backend = self.factory()
+            from .comparison import generation_backend
+
+            self.normal_backend = generation_backend(backend)
+            self.backend = backend
             self.load_seconds = time.perf_counter() - started
 
         try:
@@ -261,7 +294,7 @@ class Runtime:
             self.error = "The model could not load. Check the model path and server log."
 
     def evaluate(
-        self, spec: dict, questions: dict, paths: list[Path], comparison: bool = False
+        self, spec: dict, questions: dict, paths: list[Path], comparison: bool = False, emit=None
     ) -> dict:
         started = time.perf_counter()
         media, metadata = prepare_media(paths, spec.get("media", []))
@@ -271,7 +304,19 @@ class Runtime:
         if comparison:
             from .comparison import compare
 
-            result, details = compare(self.backend, state, questions, normalized - started)
+            result, details = (
+                compare(
+                    self.backend,
+                    state,
+                    questions,
+                    normalized - started,
+                    emit=emit,
+                    concurrent=True,
+                    normal_backend=self.normal_backend,
+                )
+                if emit
+                else compare(self.backend, state, questions, normalized - started)
+            )
         else:
             result = DecisionEngine(self.backend).system_one(state, questions)
         finished = time.perf_counter()
@@ -332,6 +377,90 @@ def create_app(model: str, work_dir: Path, backend_factory=None) -> FastAPI:
     async def index():
         return FileResponse(STATIC / "index.html")
 
+    @app.get("/demo")
+    async def demo():
+        return FileResponse(STATIC / "demo.html")
+
+    @app.post("/api/compare-stream")
+    async def stream(request: Request):
+        if runtime.backend is None or runtime.error:
+            return JSONResponse(
+                {"error": runtime.error or "The model is still loading."}, status_code=503
+            )
+        if runtime.lock.locked():
+            return JSONResponse(
+                {"error": "Another evaluation is running. Wait for it to finish."}, status_code=429
+            )
+
+        await runtime.lock.acquire()
+        try:
+            directory = TemporaryDirectory(prefix="stream-", dir=work_dir)
+        except BaseException:
+            runtime.lock.release()
+            raise
+        try:
+            spec, questions, paths = await read_upload(request, directory.name)
+        except BaseException as exc:
+            directory.cleanup()
+            runtime.lock.release()
+            if isinstance(exc, (ValueError, TypeError, KeyError)):
+                return JSONResponse({"error": str(exc)}, status_code=400)
+            raise
+
+        async def events():
+            loop = asyncio.get_running_loop()
+            queue = asyncio.Queue()
+            stopped = Event()
+
+            class StreamStopped(Exception):
+                pass
+
+            def emit(event):
+                if stopped.is_set():
+                    raise StreamStopped()
+                loop.call_soon_threadsafe(queue.put_nowait, event)
+
+            def evaluate():
+                try:
+                    result = runtime.evaluate(spec, questions, paths, True, emit)
+                    emit({"type": "complete", "result": result})
+                except StreamStopped:
+                    pass
+                except (ValueError, TypeError, KeyError) as exc:
+                    loop.call_soon_threadsafe(
+                        queue.put_nowait, {"type": "error", "error": str(exc)}
+                    )
+                except Exception:
+                    LOGGER.exception("Streaming evaluation failed")
+                    if not stopped.is_set():
+                        loop.call_soon_threadsafe(
+                            queue.put_nowait,
+                            {
+                                "type": "error",
+                                "error": "Evaluation failed. Check the media or reduce the input size. Details are in the server log.",
+                            },
+                        )
+
+            future = loop.run_in_executor(runtime.pool, evaluate)
+            future.add_done_callback(lambda _: queue.put_nowait(None))
+            try:
+                yield json.dumps({"type": "accepted"}) + "\n"
+                while (event := await queue.get()) is not None:
+                    yield json.dumps(event, allow_nan=False) + "\n"
+            finally:
+                stopped.set()
+                # Keep uploads and the GPU lock alive until the worker stops.
+                with CancelScope(shield=True):
+                    try:
+                        await asyncio.shield(future)
+                    finally:
+                        directory.cleanup()
+                        runtime.lock.release()
+
+        return StreamingResponse(
+            events(), media_type="application/x-ndjson", headers={"X-Accel-Buffering": "no"}
+        )
+
     @app.get("/api/status")
     async def status():
         return {
@@ -359,46 +488,21 @@ def create_app(model: str, work_dir: Path, backend_factory=None) -> FastAPI:
         async with runtime.lock:
             started = time.perf_counter()
             try:
-                async with request.form(
-                    max_files=10, max_fields=1, max_part_size=1024 * 1024
-                ) as form:
-                    if set(form) - {"spec", "media"} or not isinstance(form.get("spec"), str):
-                        raise ValueError("Submit a JSON spec and optional media attachments")
-                    spec, questions = read_spec(form["spec"])
-                    files = form.getlist("media")
-                    if len(files) != len(spec.get("media", [])) or not all(
-                        isinstance(file, UploadFile) for file in files
-                    ):
-                        raise ValueError("Attachment files do not match the request")
-                    with TemporaryDirectory(prefix="run-", dir=work_dir) as directory:
-                        paths, total = [], 0
-                        for index, file in enumerate(files):
-                            suffix = Path(file.filename or "upload").suffix.lower()
-                            if len(suffix) > 10 or not suffix.replace(".", "").isalnum():
-                                suffix = ".bin"
-                            path = Path(directory) / f"attachment-{index}{suffix}"
-                            with path.open("wb") as output:
-                                while chunk := await file.read(1024 * 1024):
-                                    total += len(chunk)
-                                    if total > MAX_UPLOAD_BYTES:
-                                        raise ValueError(
-                                            "Attachments exceed the 200 MB total upload limit"
-                                        )
-                                    output.write(chunk)
-                            paths.append(path)
-                        future = asyncio.get_running_loop().run_in_executor(
-                            runtime.pool,
-                            runtime.evaluate,
-                            spec,
-                            questions,
-                            paths,
-                            request.url.path == "/api/compare",
-                        )
-                        try:
-                            result = await asyncio.shield(future)
-                        except asyncio.CancelledError:
-                            await future
-                            raise
+                with TemporaryDirectory(prefix="run-", dir=work_dir) as directory:
+                    spec, questions, paths = await read_upload(request, directory)
+                    future = asyncio.get_running_loop().run_in_executor(
+                        runtime.pool,
+                        runtime.evaluate,
+                        spec,
+                        questions,
+                        paths,
+                        request.url.path == "/api/compare",
+                    )
+                    try:
+                        result = await asyncio.shield(future)
+                    except asyncio.CancelledError:
+                        await future
+                        raise
                 result["request_seconds"] = time.perf_counter() - started
                 return JSONResponse(result)
             except (ValueError, TypeError, KeyError) as exc:

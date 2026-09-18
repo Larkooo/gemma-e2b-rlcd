@@ -3,6 +3,6 @@ recursive-include docs *.md *.txt *.jpg *.mp4 *.json
 recursive-include examples *.json *.jsonl *.txt
 recursive-include reports *.md *.json
 recursive-include scripts *.py
-recursive-include tests *.py
-recursive-include gemma_rlcd/static *.html *.css *.js *.json
+recursive-include tests *.py *.cjs
+recursive-include gemma_rlcd/static *.html *.css *.js *.json *.jpg
 global-exclude .DS_Store *.py[cod] *.safetensors *.gguf

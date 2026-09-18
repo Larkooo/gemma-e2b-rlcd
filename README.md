@@ -33,6 +33,10 @@ Choose **Run all fields** for answers and distributions, or **Compare with Gemma
 
 Use the full [multimodal checkpoint](https://huggingface.co/mlx-community/gemma-4-e2b-it-4bit), including its audio encoder. Pass an existing local checkpoint to `--model` to skip the download.
 
+### Live visual demo
+
+Open **http://127.0.0.1:8787/demo** for 32, 64, or 128 checks over an image or video. Use the included street photo or upload your own media. The parallel scorer streams completed field batches; normal Gemma streams its generated JSON. Live clocks, per-check probabilities, answer differences, and downloadable events make the comparison inspectable. Both paths start together and stream side by side, sharing the resident weights with separate processors and KV caches. Timings measure concurrent completion on one GPU, including resource contention. The playground’s ordinary comparison remains sequential for isolated timings.
+
 ## How it works
 
 ```mermaid
@@ -111,7 +115,7 @@ A ratio above 1 favors parallel scoring. The support example matches all 28 outp
 
 The playground accepts up to eight images, one audio source, and one video, with 200 MB of uploads per request. Audio and videos with sound support up to 30 seconds; silent video supports up to 60 seconds. Video targets one frame per second, capped at 32 frames, so brief events can fall between samples.
 
-Requests support up to 32 named fields, 64 primitive decisions, and 8,192 processed input tokens. Oversized inputs return an error rather than being truncated. Multi-picture phone JPEGs use the full-resolution primary photograph. Text and field definitions are saved in browser local storage; uploaded media is not retained.
+Requests support up to 32 named fields, 128 primitive decisions, and 8,192 processed input tokens. Oversized inputs return an error rather than being truncated. Multi-picture phone JPEGs use the full-resolution primary photograph. Text and field definitions are saved in browser local storage; uploaded media is not retained.
 
 ## Development
 

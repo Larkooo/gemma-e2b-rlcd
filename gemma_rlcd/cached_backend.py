@@ -149,7 +149,11 @@ class CachedMLXBackend(MLXBackend):
         return scores
 
     def branches(
-        self, prepared: PreparedState, prefix_cache, requests: Sequence[ScoringRequest]
+        self,
+        prepared: PreparedState,
+        prefix_cache,
+        requests: Sequence[ScoringRequest],
+        on_batch=None,
     ) -> list[TokenScores]:
         mx = self.mx
         scores = []
@@ -188,9 +192,10 @@ class CachedMLXBackend(MLXBackend):
                 :, 0, :
             ].astype(mx.float32)
             mx.eval(logits)
-            scores.extend(
-                self._extract(logits, batch, [prepared.prefix_tokens + n for n in lengths])
-            )
+            completed = self._extract(logits, batch, [prepared.prefix_tokens + n for n in lengths])
+            scores.extend(completed)
+            if on_batch is not None:
+                on_batch(start, completed)
             batch_sizes.append(len(batch))
             tail_lengths.append(tail_length)
         self.last_stats["branch_batch_sizes"] = batch_sizes

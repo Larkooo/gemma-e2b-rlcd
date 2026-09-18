@@ -27,9 +27,11 @@ def test_complete_candidate_likelihood_uses_suffix_and_ignores_padding(batch_siz
         )
     )
     fields = [(0, FieldTokens((9,), ((1, 2), (1, 3), (4,))))]
-    results, batches = backend._sequence_scores([], 100, fields)
+    streamed = []
+    results, batches = backend._sequence_scores([], 100, fields, on_scores=streamed.append)
     likelihoods = [math.exp(value) for value in results[0].logits]
     assert likelihoods == pytest.approx([0.09, 0.81, 0.1], abs=1e-6)
     assert results[0].allowed_token_mass == pytest.approx(1, abs=1e-6)
     assert sum(batches) == 3
     assert max(batches) <= batch_size
+    assert streamed == [[(0, results[0])]]

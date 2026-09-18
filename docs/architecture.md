@@ -53,7 +53,7 @@ Float32 reduced the probability drift observed when changing execution shapes un
 - One silent video up to 60 seconds, sampled at a target of 1 fps with a 32-frame processor cap.
 - A video's soundtrack is included automatically. Videos with audio have a 30-second limit; a second audio source returns an error.
 - Up to 8,192 processed input tokens by default. Inputs exceeding the limit are rejected without truncation.
-- Up to 32 named fields and 64 primitive decisions in the playground.
+- Up to 32 named fields and 128 primitive decisions in the playground.
 - Questions and descriptions are strings; the Python contracts use name-to-description mappings.
 
 Video sampling can miss brief events. The limits describe the current serving configuration rather than the checkpoint's maximum context capacity.

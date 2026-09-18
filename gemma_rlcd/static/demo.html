@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Live visual demo · Gemma E2B RLCD</title>
+  <link rel="stylesheet" href="/static/demo.css"><script src="/static/demo-utils.js" defer></script><script src="/static/demo.js" defer></script>
+</head>
+<body>
+  <header><a class="brand" href="/demo">Gemma E2B RLCD</a><nav><span id="model-status" role="status">Connecting…</span><a href="/">Open playground ↗</a></nav></header>
+  <main>
+    <div class="heading"><div><span class="eyebrow">LIVE MULTIMODAL COMPARISON</span><h1>One scene. <span id="headline-count">128</span> decisions.</h1><p>Both start together. Watch batched decisions race against normal Gemma’s streamed JSON.</p></div><button id="export" class="secondary" disabled>Export run ↓</button></div>
+    <div class="workspace">
+      <section class="input-panel" aria-labelledby="input-title">
+        <div class="section-title"><h2 id="input-title">The evidence</h2><button id="sample" class="text-button">Use sample photo</button></div>
+        <div id="dropzone" class="preview" tabindex="0" role="button" aria-label="Choose an image or video"><img id="image-preview" alt="Selected input"><video id="video-preview" controls playsinline hidden></video><div id="empty-preview" hidden>Drop an image or video</div></div>
+        <div class="media-controls"><label class="file-button">Choose image or video<input id="media-file" type="file" accept="image/png,image/jpeg,image/webp,image/bmp,video/*"></label><span id="file-name"></span></div>
+        <p id="credit" class="small"></p>
+        <label for="output-count">Number of visual checks</label><select id="output-count"><option value="32">32 checks · quick comparison</option><option value="64">64 checks · larger output</option><option value="128" selected>128 checks · full visual inventory</option></select>
+        <label for="instructions">Instructions</label><textarea id="instructions" rows="3" placeholder="Optional instructions for both models"></textarea>
+        <p class="small">One image or video. Silent clips up to 60 s; clips with audio up to 30 s. Sampled video frames and soundtrack go to both paths.</p>
+        <div class="actions"><button id="run" class="primary" disabled>Compare · stream answers</button><button id="stop" class="secondary" hidden>Stop</button></div>
+        <p id="run-note" class="small" role="status">The model loads once. Every comparison uses fresh input state.</p>
+        <div id="error" role="alert" hidden></div>
+      </section>
+      <section class="live-panel" aria-labelledby="live-title">
+        <div class="section-title"><h2 id="live-title">Live output</h2><span id="run-phase" class="small">Ready</span></div>
+        <div class="engines">
+          <article class="engine parallel"><div class="engine-title"><h3>Parallel scorer</h3><span id="parallel-state">Waiting</span></div><strong class="clock" id="parallel-clock">0.00<span>s</span></strong><div class="progress"><i id="parallel-progress"></i></div><div class="engine-stats"><span id="parallel-count">0 / 128 decisions</span><span>GPU batches</span></div><p id="parallel-first" class="small">First answer —</p></article>
+          <article class="engine normal"><div class="engine-title"><h3>Normal Gemma</h3><span id="normal-state">Waiting</span></div><strong class="clock" id="normal-clock">0.00<span>s</span></strong><div class="progress"><i id="normal-progress"></i></div><div class="engine-stats"><span id="normal-count">0 / 128 decisions</span><span id="token-count">0 tokens</span></div><p id="normal-first" class="small">First answer —</p></article>
+        </div>
+        <div id="verdict" class="verdict" aria-live="polite">Upload a scene or try the sample. Results are measured live.</div>
+        <div class="streams">
+          <div><div class="stream-label"><span>Completed decisions</span><span class="live-dot">LIVE</span></div><pre id="parallel-stream" aria-label="Parallel scorer output">Answers appear as soon as each batch completes.</pre></div>
+          <div><div class="stream-label"><span>Generated JSON</span><span class="live-dot">LIVE</span></div><pre id="normal-stream" aria-label="Normal Gemma generated JSON">Real token output will stream here.</pre></div>
+        </div>
+        <p class="method-note">Both paths start together on the same GPU, with independent input state and one shared clock. Same weights, media, questions, and compact answer contract. Timings include resource contention; model loading excluded.</p>
+      </section>
+    </div>
+    <section class="wall" aria-labelledby="wall-title"><div class="wall-heading"><div><h2 id="wall-title">Every decision, as it lands</h2><p class="small">A check is “yes” when visually established. P = parallel probability of yes · G = Gemma’s boolean. Streaming JSON is provisional until validated.</p></div><div class="filters"><label for="filter" class="sr-only">Filter decisions</label><select id="filter"><option value="all">All checks</option><option value="yes">Detected by either</option><option value="different">Different answers</option></select><span id="agreement" class="small"></span></div></div><div id="output-grid"></div><p id="no-matches" class="small" hidden>No completed checks match this filter.</p></section>
+    <details class="details"><summary>What is being measured?</summary><p>Both paths process the same complete image or sampled video, instructions, and label descriptions. The parallel scorer returns probabilities as field batches finish. Normal Gemma is asked to generate one compact JSON object with boolean decisions, without explanations or probability prose.</p><p>The timers include input preparation and inference, with shared upload decoding added equally. They exclude model loading, upload transfer, and allocator reset. This is one simultaneous run per path; GPU contention and first-use effects can affect timing. The result measures completion time while both are running, not isolated throughput. Matching answers measures agreement, not correctness. Invalid normal output is shown without a speedup claim.</p><p>Video processing targets one frame per second with a 32-frame cap. Long media plus 128 questions can exceed the 8,192-token input limit; reduce the number of checks or use a shorter clip. Media is never silently trimmed.</p></details>
+  </main>
+</body>
+</html>
