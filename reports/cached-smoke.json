@@ -1,0 +1,569 @@
+{
+  "status": "integration_smoke_only",
+  "trained": false,
+  "calibration_validated": false,
+  "model": "models/gemma-4-e2b-it-4bit",
+  "load_seconds": 3.503247958025895,
+  "results": [
+    {
+      "modality": "text",
+      "question": "category",
+      "expected": "cat",
+      "answer": {
+        "calibration_status": "unvalidated",
+        "temperature": 1.0,
+        "probability_source": "restricted_next_token_logits",
+        "diagnostics": {
+          "logits": {
+            "cat": 14.138001441955566,
+            "dog": -7.828792572021484,
+            "other": -5.8069353103637695
+          },
+          "allowed_token_mass": 0.9999980330467224,
+          "input_tokens": 162
+        },
+        "confidence": 0.999999952451527,
+        "confidence_definition": "one_minus_normalized_entropy",
+        "probabilities": {
+          "cat": 0.9999999975338048,
+          "dog": 2.883650174929237e-10,
+          "other": 2.177830248177456e-09
+        },
+        "type": "choice",
+        "choice": "cat",
+        "selected_probability": 0.9999999975338048
+      },
+      "actual": "cat",
+      "correct": true
+    },
+    {
+      "modality": "text",
+      "question": "dog",
+      "expected": false,
+      "answer": {
+        "calibration_status": "unvalidated",
+        "temperature": 1.0,
+        "probability_source": "restricted_next_token_logits",
+        "diagnostics": {
+          "logits": {
+            "true": -5.387052059173584,
+            "false": 11.585115432739258
+          },
+          "allowed_token_mass": 0.9999532699584961,
+          "input_tokens": 149
+        },
+        "type": "noul",
+        "noul": 4.256780866457858e-08
+      },
+      "actual": false,
+      "correct": true
+    },
+    {
+      "modality": "text",
+      "question": "grade",
+      "expected": 1,
+      "answer": {
+        "calibration_status": "unvalidated",
+        "temperature": 1.0,
+        "probability_source": "restricted_next_token_logits",
+        "diagnostics": {
+          "logits": {
+            "0": 20.659626007080078,
+            "1": 12.593038558959961,
+            "2": 8.86001205444336
+          },
+          "allowed_token_mass": 0.9999847412109375,
+          "input_tokens": 175
+        },
+        "confidence": 0.9973231956102689,
+        "confidence_definition": "one_minus_normalized_entropy",
+        "probabilities": {
+          "0": 0.9996787432898773,
+          "1": 0.000313751666353908,
+          "2": 7.505043768672337e-06
+        },
+        "type": "score",
+        "score": 0.00032876175389125265,
+        "legend": {
+          "0": "No animals are present",
+          "1": "One kind of animal is present",
+          "2": "Two or more kinds of animals are present"
+        }
+      },
+      "actual": 0,
+      "correct": false
+    },
+    {
+      "modality": "image",
+      "question": "category",
+      "expected": "red",
+      "answer": {
+        "calibration_status": "unvalidated",
+        "temperature": 1.0,
+        "probability_source": "restricted_next_token_logits",
+        "diagnostics": {
+          "logits": {
+            "red": 16.3551082611084,
+            "green": -4.559225082397461,
+            "blue": -7.437244415283203
+          },
+          "allowed_token_mass": 1.0,
+          "input_tokens": 403
+        },
+        "confidence": 0.9999999824734676,
+        "confidence_definition": "one_minus_normalized_entropy",
+        "probabilities": {
+          "red": 0.9999999991274595,
+          "green": 8.26076819944091e-10,
+          "blue": 4.6463564144730147e-11
+        },
+        "type": "choice",
+        "choice": "red",
+        "selected_probability": 0.9999999991274595
+      },
+      "actual": "red",
+      "correct": true
+    },
+    {
+      "modality": "image",
+      "question": "red",
+      "expected": true,
+      "answer": {
+        "calibration_status": "unvalidated",
+        "temperature": 1.0,
+        "probability_source": "restricted_next_token_logits",
+        "diagnostics": {
+          "logits": {
+            "true": 16.79075813293457,
+            "false": 4.610708236694336
+          },
+          "allowed_token_mass": 1.0,
+          "input_tokens": 395
+        },
+        "type": "noul",
+        "noul": 0.9999948682048491
+      },
+      "actual": true,
+      "correct": true
+    },
+    {
+      "modality": "image",
+      "question": "grade",
+      "expected": 2,
+      "answer": {
+        "calibration_status": "unvalidated",
+        "temperature": 1.0,
+        "probability_source": "restricted_next_token_logits",
+        "diagnostics": {
+          "logits": {
+            "0": -4.389339447021484,
+            "1": -4.518309116363525,
+            "2": 9.245796203613281
+          },
+          "allowed_token_mass": 0.9999169707298279,
+          "input_tokens": 421
+        },
+        "confidence": 0.9999698976240883,
+        "confidence_definition": "one_minus_normalized_entropy",
+        "probabilities": {
+          "0": 1.1976635975935411e-06,
+          "1": 1.0527470517928978e-06,
+          "2": 0.9999977495893506
+        },
+        "type": "score",
+        "score": 1.999996551925753,
+        "legend": {
+          "0": "No red",
+          "1": "Red covers some but not most of the image",
+          "2": "Red covers most or all of the image"
+        }
+      },
+      "actual": 2,
+      "correct": true
+    },
+    {
+      "modality": "speech",
+      "question": "category",
+      "expected": "dog",
+      "answer": {
+        "calibration_status": "unvalidated",
+        "temperature": 1.0,
+        "probability_source": "restricted_next_token_logits",
+        "diagnostics": {
+          "logits": {
+            "cat": -8.671025276184082,
+            "dog": 13.081156730651855,
+            "other": -8.436193466186523
+          },
+          "allowed_token_mass": 0.9999990463256836,
+          "input_tokens": 202
+        },
+        "confidence": 0.9999999833342267,
+        "confidence_definition": "one_minus_normalized_entropy",
+        "probabilities": {
+          "cat": 3.573941049350094e-10,
+          "dog": 0.999999999190611,
+          "other": 4.51994909807406e-10
+        },
+        "type": "choice",
+        "choice": "dog",
+        "selected_probability": 0.999999999190611
+      },
+      "actual": "dog",
+      "correct": true
+    },
+    {
+      "modality": "speech",
+      "question": "dog",
+      "expected": true,
+      "answer": {
+        "calibration_status": "unvalidated",
+        "temperature": 1.0,
+        "probability_source": "restricted_next_token_logits",
+        "diagnostics": {
+          "logits": {
+            "true": 12.031782150268555,
+            "false": 10.668206214904785
+          },
+          "allowed_token_mass": 0.9999980330467224,
+          "input_tokens": 189
+        },
+        "type": "noul",
+        "noul": 0.7963402662681872
+      },
+      "actual": true,
+      "correct": true
+    },
+    {
+      "modality": "speech",
+      "question": "grade",
+      "expected": 1,
+      "answer": {
+        "calibration_status": "unvalidated",
+        "temperature": 1.0,
+        "probability_source": "restricted_next_token_logits",
+        "diagnostics": {
+          "logits": {
+            "0": 8.066949844360352,
+            "1": 17.839630126953125,
+            "2": 14.933938026428223
+          },
+          "allowed_token_mass": 0.9999790191650391,
+          "input_tokens": 215
+        },
+        "confidence": 0.8137948444614508,
+        "confidence_definition": "one_minus_normalized_entropy",
+        "probabilities": {
+          "0": 5.402838373366037e-05,
+          "1": 0.948075875766028,
+          "2": 0.051870095850238315
+        },
+        "type": "score",
+        "score": 1.0518160674665047,
+        "legend": {
+          "0": "No animals are present",
+          "1": "One kind of animal is present",
+          "2": "Two or more kinds of animals are present"
+        }
+      },
+      "actual": 1,
+      "correct": true
+    },
+    {
+      "modality": "video",
+      "question": "category",
+      "expected": "red_blue",
+      "answer": {
+        "calibration_status": "unvalidated",
+        "temperature": 1.0,
+        "probability_source": "restricted_next_token_logits",
+        "diagnostics": {
+          "logits": {
+            "red_blue": 20.507583618164062,
+            "blue_red": 10.170618057250977,
+            "unchanging": 8.786561965942383
+          },
+          "allowed_token_mass": 0.9999961256980896,
+          "input_tokens": 454
+        },
+        "confidence": 0.9995715025697076,
+        "confidence_definition": "one_minus_normalized_entropy",
+        "probabilities": {
+          "red_blue": 0.9999594678263316,
+          "blue_red": 3.2411213676837765e-05,
+          "unchanging": 8.120959991563275e-06
+        },
+        "type": "choice",
+        "choice": "red_blue",
+        "selected_probability": 0.9999594678263316
+      },
+      "actual": "red_blue",
+      "correct": true
+    },
+    {
+      "modality": "video",
+      "question": "both",
+      "expected": true,
+      "answer": {
+        "calibration_status": "unvalidated",
+        "temperature": 1.0,
+        "probability_source": "restricted_next_token_logits",
+        "diagnostics": {
+          "logits": {
+            "true": 12.273065567016602,
+            "false": 4.594664573669434
+          },
+          "allowed_token_mass": 0.9997787475585938,
+          "input_tokens": 431
+        },
+        "type": "noul",
+        "noul": 0.9995374998147718
+      },
+      "actual": true,
+      "correct": true
+    },
+    {
+      "modality": "video",
+      "question": "grade",
+      "expected": 2,
+      "answer": {
+        "calibration_status": "unvalidated",
+        "temperature": 1.0,
+        "probability_source": "restricted_next_token_logits",
+        "diagnostics": {
+          "logits": {
+            "0": 15.262929916381836,
+            "1": 18.04283332824707,
+            "2": 17.716659545898438
+          },
+          "allowed_token_mass": 0.9990962743759155,
+          "input_tokens": 452
+        },
+        "confidence": 0.2651038913876994,
+        "confidence_definition": "one_minus_normalized_entropy",
+        "probabilities": {
+          "0": 0.034783683330861,
+          "1": 0.5606247679438724,
+          "2": 0.4045915487252666
+        },
+        "type": "score",
+        "score": 1.3698078653944057,
+        "legend": {
+          "0": "Neither red nor blue",
+          "1": "Only one of red or blue",
+          "2": "Both red and blue"
+        }
+      },
+      "actual": 1,
+      "correct": false
+    },
+    {
+      "modality": "video_with_speech",
+      "question": "animal",
+      "expected": "dog",
+      "answer": {
+        "calibration_status": "unvalidated",
+        "temperature": 1.0,
+        "probability_source": "restricted_next_token_logits",
+        "diagnostics": {
+          "logits": {
+            "cat": -4.245584487915039,
+            "dog": 14.423544883728027,
+            "other": -4.254741668701172
+          },
+          "allowed_token_mass": 0.9999990463256836,
+          "input_tokens": 548
+        },
+        "confidence": 0.9999997219086235,
+        "confidence_definition": "one_minus_normalized_entropy",
+        "probabilities": {
+          "cat": 7.800099186044496e-09,
+          "dog": 0.9999999844709024,
+          "other": 7.728998306293253e-09
+        },
+        "type": "choice",
+        "choice": "dog",
+        "selected_probability": 0.9999999844709024
+      },
+      "actual": "dog",
+      "correct": true
+    },
+    {
+      "modality": "video_with_speech",
+      "question": "dog",
+      "expected": true,
+      "answer": {
+        "calibration_status": "unvalidated",
+        "temperature": 1.0,
+        "probability_source": "restricted_next_token_logits",
+        "diagnostics": {
+          "logits": {
+            "true": 6.586134910583496,
+            "false": 13.448320388793945
+          },
+          "allowed_token_mass": 0.9999971389770508,
+          "input_tokens": 532
+        },
+        "type": "noul",
+        "noul": 0.001045529780610278
+      },
+      "actual": false,
+      "correct": false
+    },
+    {
+      "modality": "video_with_speech",
+      "question": "grade",
+      "expected": 2,
+      "answer": {
+        "calibration_status": "unvalidated",
+        "temperature": 1.0,
+        "probability_source": "restricted_next_token_logits",
+        "diagnostics": {
+          "logits": {
+            "0": 13.799886703491211,
+            "1": 19.38656234741211,
+            "2": 20.63193702697754
+          },
+          "allowed_token_mass": 0.9996891617774963,
+          "input_tokens": 555
+        },
+        "confidence": 0.5106314584091416,
+        "confidence_definition": "one_minus_normalized_entropy",
+        "probabilities": {
+          "0": 0.0008368643794447739,
+          "1": 0.22331479003439436,
+          "2": 0.7758483455861608
+        },
+        "type": "score",
+        "score": 1.775011481206716,
+        "legend": {
+          "0": "Neither red nor blue",
+          "1": "Only one of red or blue",
+          "2": "Both red and blue"
+        }
+      },
+      "actual": 2,
+      "correct": true
+    }
+  ],
+  "batches": [
+    {
+      "modality": "text",
+      "seconds": 0.5128349159786012,
+      "execution": {
+        "execution": "shared_prefix_gpu_batched_branches",
+        "prefix_prefills": 1,
+        "prefix_tokens": 50,
+        "question_suffix_tokens": [
+          112,
+          99,
+          125
+        ],
+        "preprocess_seconds": 0.021336625010007992,
+        "prefill_seconds": 0.067386415990768,
+        "kv_storage": "replicated_per_batch_row",
+        "compute_dtype": "float32",
+        "branch_batch_sizes": [
+          3
+        ],
+        "branch_seconds": 0.4239916250226088
+      },
+      "error": null
+    },
+    {
+      "modality": "image",
+      "seconds": 1.2473725419840775,
+      "execution": {
+        "execution": "shared_prefix_gpu_batched_branches",
+        "prefix_prefills": 1,
+        "prefix_tokens": 295,
+        "question_suffix_tokens": [
+          108,
+          100,
+          126
+        ],
+        "preprocess_seconds": 0.00806441597524099,
+        "prefill_seconds": 0.8169753750262316,
+        "kv_storage": "replicated_per_batch_row",
+        "compute_dtype": "float32",
+        "branch_batch_sizes": [
+          3
+        ],
+        "branch_seconds": 0.4222403749881778
+      },
+      "error": null
+    },
+    {
+      "modality": "speech",
+      "seconds": 0.6525170000095386,
+      "execution": {
+        "execution": "shared_prefix_gpu_batched_branches",
+        "prefix_prefills": 1,
+        "prefix_tokens": 86,
+        "question_suffix_tokens": [
+          116,
+          103,
+          129
+        ],
+        "preprocess_seconds": 0.08469962500385009,
+        "prefill_seconds": 0.11033962501096539,
+        "kv_storage": "replicated_per_batch_row",
+        "compute_dtype": "float32",
+        "branch_batch_sizes": [
+          3
+        ],
+        "branch_seconds": 0.4573739169863984
+      },
+      "error": null
+    },
+    {
+      "modality": "video",
+      "seconds": 1.576867374998983,
+      "execution": {
+        "execution": "shared_prefix_gpu_batched_branches",
+        "prefix_prefills": 1,
+        "prefix_tokens": 328,
+        "question_suffix_tokens": [
+          126,
+          103,
+          124
+        ],
+        "preprocess_seconds": 0.11360791701008566,
+        "prefill_seconds": 1.0256706249783747,
+        "kv_storage": "replicated_per_batch_row",
+        "compute_dtype": "float32",
+        "branch_batch_sizes": [
+          3
+        ],
+        "branch_seconds": 0.4368126250046771
+      },
+      "error": null
+    },
+    {
+      "modality": "video_with_speech",
+      "seconds": 1.6554724159941543,
+      "execution": {
+        "execution": "shared_prefix_gpu_batched_branches",
+        "prefix_prefills": 1,
+        "prefix_tokens": 431,
+        "question_suffix_tokens": [
+          117,
+          101,
+          124
+        ],
+        "preprocess_seconds": 0.09640891698654741,
+        "prefill_seconds": 1.0476382920169272,
+        "kv_storage": "replicated_per_batch_row",
+        "compute_dtype": "float32",
+        "branch_batch_sizes": [
+          3
+        ],
+        "branch_seconds": 0.5110792499908712
+      },
+      "error": null
+    }
+  ],
+  "attempted": 15,
+  "completed": 15,
+  "correct": 12
+}

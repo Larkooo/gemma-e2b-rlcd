@@ -1,0 +1,31 @@
+{
+  "model": "models/gemma-4-e2b-it-4bit",
+  "state_layers": 35,
+  "compute_dtype": "float32",
+  "head_config": {
+    "input_dims": 1536,
+    "dims": 256,
+    "heads": 4,
+    "query_layers": 1,
+    "decision_layers": 2
+  },
+  "image_soft_tokens": 280,
+  "video_max_frames": 32,
+  "training": {
+    "method": "supervised_categorical_nll_frozen_backbone",
+    "updates": 600,
+    "learning_rate": 0.0003,
+    "seed": 11,
+    "source_counts": {
+      "train": 64,
+      "validation": 16,
+      "test": 16
+    },
+    "dataset_sha256": {
+      "train": "d21385d4fb56c96c02840c44f75e191a44cae71cf7a50c0e1ef241f61e9fbf93",
+      "validation": "c9105738e69e7f787c429e20dca811c6a39700bccf542dd3bd27fa9dc7338dbb",
+      "test": "95563b8f504a7d01b506d1fb561b5530f139f2a5939e035cffb0bb650c9f9858"
+    }
+  },
+  "calibration_status": "unvalidated"
+}

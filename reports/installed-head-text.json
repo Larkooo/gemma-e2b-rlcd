@@ -1,0 +1,82 @@
+{
+  "answers": {
+    "animal": {
+      "calibration_status": "unvalidated",
+      "temperature": 1.0,
+      "probability_source": "candidate_conditioned_decision_head",
+      "diagnostics": {
+        "logits": {
+          "cat": -1.0566524267196655,
+          "dog": -0.5879817008972168,
+          "other": -1.0210474729537964
+        },
+        "allowed_token_mass": null,
+        "input_tokens": 236
+      },
+      "confidence": 0.02227084291725423,
+      "confidence_definition": "one_minus_normalized_entropy",
+      "probabilities": {
+        "cat": 0.2751701450520113,
+        "dog": 0.43968578264495356,
+        "other": 0.28514407230303507
+      },
+      "type": "choice",
+      "choice": "dog",
+      "selected_probability": 0.43968578264495356
+    },
+    "presence": {
+      "calibration_status": "unvalidated",
+      "temperature": 1.0,
+      "probability_source": "candidate_conditioned_decision_head",
+      "type": "independent",
+      "probabilities": {
+        "cat": 0.3587828020170997,
+        "dog": 0.30203177359940125
+      },
+      "diagnostics": {
+        "cat": {
+          "logits": {
+            "yes": -1.4083480834960938,
+            "no": -0.8276970386505127
+          },
+          "allowed_token_mass": null,
+          "input_tokens": 236
+        },
+        "dog": {
+          "logits": {
+            "yes": -1.3475406169891357,
+            "no": -0.5098992586135864
+          },
+          "allowed_token_mass": null,
+          "input_tokens": 236
+        }
+      }
+    }
+  },
+  "model": "models/gemma-4-e2b-it-4bit",
+  "load_seconds": 2.603264916979242,
+  "decision_seconds": 0.31461358300293796,
+  "execution": {
+    "execution": "shared_state_parallel_decision_head",
+    "state_encodes": 1,
+    "state_tokens": 50,
+    "state_layers": 35,
+    "compute_dtype": "float32",
+    "field_count": 3,
+    "candidate_count": 7,
+    "query_tokens": 186,
+    "padded_query_tokens": 224,
+    "state_memory_batch_size": 1,
+    "image_soft_tokens": 280,
+    "video_max_frames": 32,
+    "video_frames": [],
+    "preprocess_seconds": 0.02173629100434482,
+    "state_encode_seconds": 0.15245175000745803,
+    "query_embed_seconds": 0.0008004169794730842,
+    "trained": true,
+    "head_seconds": 0.1394857499981299,
+    "total_seconds": 0.314488917007111
+  },
+  "video_sampling_fps": null,
+  "video_soundtrack": null
+}

@@ -1,0 +1,15 @@
+{
+  "state": {"text": "A cat sleeps on the sofa. No dogs are present."},
+  "questions": {
+    "animal": {
+      "type": "choice",
+      "instructions": "Which animal is present?",
+      "criteria": {"cat": "A cat", "dog": "A dog", "other": "Neither a cat nor a dog"}
+    },
+    "presence": {
+      "type": "independent",
+      "instructions": "Which animals are present in the state?",
+      "criteria": {"cat": "A cat is present", "dog": "A dog is present"}
+    }
+  }
+}

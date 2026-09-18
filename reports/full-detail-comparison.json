@@ -1,0 +1,526 @@
+{
+  "status": "paired_full_detail_execution_probe_not_quality_benchmark",
+  "compute_dtype": "float32",
+  "state_layers": 35,
+  "timing_scope": "warm_model_fresh_state_including_preprocessing_and_all_fields",
+  "reference": "v0.3_native_answer_tail_and_dense_vision_positions",
+  "optimized": "per_row_answer_gather_and_indexed_vision_positions",
+  "results": [
+    {
+      "state": "text",
+      "fields": 4,
+      "comparison": {
+        "max_logit_delta": 0.04127311706542969,
+        "max_probability_delta": 2.300865309390332e-08,
+        "all_winners_match": true
+      },
+      "raw_seconds": {
+        "reference": [
+          0.2997716660029255,
+          0.301498167013051,
+          0.2982421670167241,
+          0.29818720900220796,
+          0.3006909590039868
+        ],
+        "optimized": [
+          0.21187983299023472,
+          0.2127957500051707,
+          0.2164091250160709,
+          0.21244320899131708,
+          0.2128342500072904
+        ]
+      },
+      "median_seconds": {
+        "reference": 0.2997716660029255,
+        "optimized": 0.2127957500051707
+      },
+      "speed_ratio": 1.4087295728210802,
+      "execution": {
+        "reference": {
+          "execution": "shared_prefix_gpu_batched_branches",
+          "prefix_prefills": 1,
+          "prefix_tokens": 50,
+          "question_suffix_tokens": [
+            111,
+            89,
+            111,
+            89
+          ],
+          "preprocess_seconds": 0.0013118750066496432,
+          "prefill_seconds": 0.04989904200192541,
+          "kv_storage": "replicated_per_batch_row",
+          "compute_dtype": "float32",
+          "answer_mode": "tail",
+          "branch_batch_sizes": [
+            4
+          ],
+          "answer_tail_tokens": [
+            23
+          ],
+          "branch_seconds": 0.24945179198402911
+        },
+        "optimized": {
+          "execution": "shared_prefix_gpu_batched_branches",
+          "prefix_prefills": 1,
+          "prefix_tokens": 50,
+          "question_suffix_tokens": [
+            111,
+            89,
+            111,
+            89
+          ],
+          "preprocess_seconds": 0.0009428329940419644,
+          "prefill_seconds": 0.048923083988483995,
+          "kv_storage": "replicated_per_batch_row",
+          "compute_dtype": "float32",
+          "answer_mode": "gather",
+          "branch_batch_sizes": [
+            4
+          ],
+          "answer_tail_tokens": [
+            1
+          ],
+          "branch_seconds": 0.16293420802685432
+        }
+      }
+    },
+    {
+      "state": "text_many_fields",
+      "fields": 28,
+      "comparison": {
+        "max_logit_delta": 0.03295421600341797,
+        "max_probability_delta": 1.2324032350186087e-07,
+        "all_winners_match": true
+      },
+      "raw_seconds": {
+        "reference": [
+          1.595192875014618,
+          1.6785827089915983,
+          1.3933848750020843,
+          1.1273216249828693,
+          1.134570750000421
+        ],
+        "optimized": [
+          1.1232126249815337,
+          1.4638098329887725,
+          0.8695933339768089,
+          0.8530442909977864,
+          0.8389172499882989
+        ]
+      },
+      "median_seconds": {
+        "reference": 1.3933848750020843,
+        "optimized": 0.8695933339768089
+      },
+      "speed_ratio": 1.6023407960475975,
+      "execution": {
+        "reference": {
+          "execution": "shared_prefix_gpu_batched_branches",
+          "prefix_prefills": 1,
+          "prefix_tokens": 50,
+          "question_suffix_tokens": [
+            111,
+            89,
+            111,
+            89,
+            111,
+            89,
+            111,
+            89,
+            111,
+            89,
+            111,
+            89,
+            111,
+            89,
+            111,
+            89,
+            111,
+            89,
+            111,
+            89,
+            111,
+            89,
+            111,
+            89,
+            111,
+            89,
+            111,
+            89
+          ],
+          "preprocess_seconds": 0.004707916988991201,
+          "prefill_seconds": 0.05023695802083239,
+          "kv_storage": "replicated_per_batch_row",
+          "compute_dtype": "float32",
+          "answer_mode": "tail",
+          "branch_batch_sizes": [
+            28
+          ],
+          "answer_tail_tokens": [
+            23
+          ],
+          "branch_seconds": 1.0795750419783872
+        },
+        "optimized": {
+          "execution": "shared_prefix_gpu_batched_branches",
+          "prefix_prefills": 1,
+          "prefix_tokens": 50,
+          "question_suffix_tokens": [
+            111,
+            89,
+            111,
+            89,
+            111,
+            89,
+            111,
+            89,
+            111,
+            89,
+            111,
+            89,
+            111,
+            89,
+            111,
+            89,
+            111,
+            89,
+            111,
+            89,
+            111,
+            89,
+            111,
+            89,
+            111,
+            89,
+            111,
+            89
+          ],
+          "preprocess_seconds": 0.004846707975957543,
+          "prefill_seconds": 0.03718729200772941,
+          "kv_storage": "replicated_per_batch_row",
+          "compute_dtype": "float32",
+          "answer_mode": "gather",
+          "branch_batch_sizes": [
+            28
+          ],
+          "answer_tail_tokens": [
+            1
+          ],
+          "branch_seconds": 0.7968344170076307
+        }
+      }
+    },
+    {
+      "state": "image",
+      "fields": 4,
+      "comparison": {
+        "max_logit_delta": 0.027277708053588867,
+        "max_probability_delta": 0.0005237268167552767,
+        "all_winners_match": true
+      },
+      "raw_seconds": {
+        "reference": [
+          0.7077324590063654,
+          0.6922269579954445,
+          0.7190052499936428,
+          0.7019654579926282,
+          0.8274892079934943
+        ],
+        "optimized": [
+          0.6168616669892799,
+          0.6150520000082906,
+          0.6634368329832796,
+          0.5928385829902254,
+          0.6517901250044815
+        ]
+      },
+      "median_seconds": {
+        "reference": 0.7077324590063654,
+        "optimized": 0.6168616669892799
+      },
+      "speed_ratio": 1.147311458759626,
+      "execution": {
+        "reference": {
+          "execution": "shared_prefix_gpu_batched_branches",
+          "prefix_prefills": 1,
+          "prefix_tokens": 295,
+          "question_suffix_tokens": [
+            111,
+            89,
+            111,
+            89
+          ],
+          "preprocess_seconds": 0.008188582985894755,
+          "prefill_seconds": 0.6025997920078225,
+          "kv_storage": "replicated_per_batch_row",
+          "compute_dtype": "float32",
+          "answer_mode": "tail",
+          "branch_batch_sizes": [
+            4
+          ],
+          "answer_tail_tokens": [
+            23
+          ],
+          "branch_seconds": 0.21661579099600203
+        },
+        "optimized": {
+          "execution": "shared_prefix_gpu_batched_branches",
+          "prefix_prefills": 1,
+          "prefix_tokens": 295,
+          "question_suffix_tokens": [
+            111,
+            89,
+            111,
+            89
+          ],
+          "preprocess_seconds": 0.014678499981528148,
+          "prefill_seconds": 0.49442450000788085,
+          "kv_storage": "replicated_per_batch_row",
+          "compute_dtype": "float32",
+          "answer_mode": "gather",
+          "branch_batch_sizes": [
+            4
+          ],
+          "answer_tail_tokens": [
+            1
+          ],
+          "branch_seconds": 0.14263962500263005
+        }
+      }
+    },
+    {
+      "state": "speech",
+      "fields": 4,
+      "comparison": {
+        "max_logit_delta": 0.024871826171875,
+        "max_probability_delta": 0.003059221971669107,
+        "all_winners_match": true
+      },
+      "raw_seconds": {
+        "reference": [
+          0.31184137499076314,
+          0.3076098329911474,
+          0.32256937501369976,
+          0.32801233397913165,
+          0.3241599169850815
+        ],
+        "optimized": [
+          0.24542720802128315,
+          0.24117287498665974,
+          0.25888741700327955,
+          0.2607503749895841,
+          0.2586674590129405
+        ]
+      },
+      "median_seconds": {
+        "reference": 0.32256937501369976,
+        "optimized": 0.2586674590129405
+      },
+      "speed_ratio": 1.247042732953751,
+      "execution": {
+        "reference": {
+          "execution": "shared_prefix_gpu_batched_branches",
+          "prefix_prefills": 1,
+          "prefix_tokens": 86,
+          "question_suffix_tokens": [
+            111,
+            89,
+            111,
+            89
+          ],
+          "preprocess_seconds": 0.034757375018671155,
+          "prefill_seconds": 0.08088783398852684,
+          "kv_storage": "replicated_per_batch_row",
+          "compute_dtype": "float32",
+          "answer_mode": "tail",
+          "branch_batch_sizes": [
+            4
+          ],
+          "answer_tail_tokens": [
+            23
+          ],
+          "branch_seconds": 0.20847358301398344
+        },
+        "optimized": {
+          "execution": "shared_prefix_gpu_batched_branches",
+          "prefix_prefills": 1,
+          "prefix_tokens": 86,
+          "question_suffix_tokens": [
+            111,
+            89,
+            111,
+            89
+          ],
+          "preprocess_seconds": 0.03738308302126825,
+          "prefill_seconds": 0.08120041698566638,
+          "kv_storage": "replicated_per_batch_row",
+          "compute_dtype": "float32",
+          "answer_mode": "gather",
+          "branch_batch_sizes": [
+            4
+          ],
+          "answer_tail_tokens": [
+            1
+          ],
+          "branch_seconds": 0.14004641701467335
+        }
+      }
+    },
+    {
+      "state": "video",
+      "fields": 4,
+      "comparison": {
+        "max_logit_delta": 0.032245635986328125,
+        "max_probability_delta": 0.0027698250413456388,
+        "all_winners_match": true
+      },
+      "raw_seconds": {
+        "reference": [
+          0.8074127909785602,
+          0.7885524580196943,
+          0.7981201670190785,
+          0.7694437080062926,
+          0.7742784169968218
+        ],
+        "optimized": [
+          0.6906809590000194,
+          0.6916153749916703,
+          0.6840832080051769,
+          0.6755189159885049,
+          0.684329916985007
+        ]
+      },
+      "median_seconds": {
+        "reference": 0.7885524580196943,
+        "optimized": 0.684329916985007
+      },
+      "speed_ratio": 1.152298677067732,
+      "execution": {
+        "reference": {
+          "execution": "shared_prefix_gpu_batched_branches",
+          "prefix_prefills": 1,
+          "prefix_tokens": 328,
+          "question_suffix_tokens": [
+            111,
+            89,
+            111,
+            89
+          ],
+          "preprocess_seconds": 0.046376499987673014,
+          "prefill_seconds": 0.5182112499896903,
+          "kv_storage": "replicated_per_batch_row",
+          "compute_dtype": "float32",
+          "answer_mode": "tail",
+          "branch_batch_sizes": [
+            4
+          ],
+          "answer_tail_tokens": [
+            23
+          ],
+          "branch_seconds": 0.2096480840118602
+        },
+        "optimized": {
+          "execution": "shared_prefix_gpu_batched_branches",
+          "prefix_prefills": 1,
+          "prefix_tokens": 328,
+          "question_suffix_tokens": [
+            111,
+            89,
+            111,
+            89
+          ],
+          "preprocess_seconds": 0.0459271669969894,
+          "prefill_seconds": 0.4978581659961492,
+          "kv_storage": "replicated_per_batch_row",
+          "compute_dtype": "float32",
+          "answer_mode": "gather",
+          "branch_batch_sizes": [
+            4
+          ],
+          "answer_tail_tokens": [
+            1
+          ],
+          "branch_seconds": 0.14050270899315365
+        }
+      }
+    },
+    {
+      "state": "video_speech",
+      "fields": 4,
+      "comparison": {
+        "max_logit_delta": 0.03391742706298828,
+        "max_probability_delta": 4.7139897909720396e-05,
+        "all_winners_match": true
+      },
+      "raw_seconds": {
+        "reference": [
+          0.8708526670234278,
+          0.8815312499937136,
+          0.8763708329934161,
+          0.8937128749967087,
+          0.8730036659981124
+        ],
+        "optimized": [
+          0.7914807079941966,
+          0.7828984170046169,
+          0.7900863329996355,
+          0.7941663340025116,
+          1.3541223339852877
+        ]
+      },
+      "median_seconds": {
+        "reference": 0.8763708329934161,
+        "optimized": 0.7914807079941966
+      },
+      "speed_ratio": 1.1072548252178522,
+      "execution": {
+        "reference": {
+          "execution": "shared_prefix_gpu_batched_branches",
+          "prefix_prefills": 1,
+          "prefix_tokens": 431,
+          "question_suffix_tokens": [
+            111,
+            89,
+            111,
+            89
+          ],
+          "preprocess_seconds": 0.08222633399418555,
+          "prefill_seconds": 0.5813233329972718,
+          "kv_storage": "replicated_per_batch_row",
+          "compute_dtype": "float32",
+          "answer_mode": "tail",
+          "branch_batch_sizes": [
+            4
+          ],
+          "answer_tail_tokens": [
+            23
+          ],
+          "branch_seconds": 0.20940704201348126
+        },
+        "optimized": {
+          "execution": "shared_prefix_gpu_batched_branches",
+          "prefix_prefills": 1,
+          "prefix_tokens": 431,
+          "question_suffix_tokens": [
+            111,
+            89,
+            111,
+            89
+          ],
+          "preprocess_seconds": 0.08218174998182803,
+          "prefill_seconds": 0.9727677920018323,
+          "kv_storage": "replicated_per_batch_row",
+          "compute_dtype": "float32",
+          "answer_mode": "gather",
+          "branch_batch_sizes": [
+            4
+          ],
+          "answer_tail_tokens": [
+            1
+          ],
+          "branch_seconds": 0.2991284170129802
+        }
+      }
+    }
+  ]
+}

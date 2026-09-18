@@ -1,0 +1,283 @@
+{
+  "model": "models/gemma-4-e2b-it-4bit",
+  "compute_dtype": "float32",
+  "status": "cache_numerics_and_timing_probe_not_quality_benchmark",
+  "results": [
+    {
+      "state": "text",
+      "prefix_tokens": 50,
+      "suffix_lengths": [
+        111,
+        99,
+        111,
+        111
+      ],
+      "cached_serial_vs_uncached": {
+        "max_logit_delta": 0.032517433166503906,
+        "max_probability_delta": 4.89707640993764e-07,
+        "all_winners_match": true
+      },
+      "cached_batch_vs_uncached": {
+        "max_logit_delta": 0.047650814056396484,
+        "max_probability_delta": 9.921427801540261e-07,
+        "all_winners_match": true
+      },
+      "reversed_batch_vs_original": {
+        "max_logit_delta": 0.0,
+        "max_probability_delta": 0.0,
+        "all_winners_match": true
+      },
+      "prefix_unchanged": true,
+      "branch_batch_sizes": [
+        4
+      ],
+      "warm_seconds": {
+        "uncached": [
+          0.24687987499055453,
+          0.24587425001664087,
+          0.24255950000951998
+        ],
+        "cached_batched": [
+          0.17461620797985233,
+          0.18541070900391787,
+          0.16993425000691786
+        ]
+      },
+      "warm_median_seconds": {
+        "uncached": 0.24587425001664087,
+        "cached_batched": 0.17461620797985233
+      },
+      "speedup": 1.4080837790556675
+    },
+    {
+      "state": "image",
+      "prefix_tokens": 295,
+      "suffix_lengths": [
+        111,
+        99,
+        111,
+        111
+      ],
+      "cached_serial_vs_uncached": {
+        "max_logit_delta": 0.04843616485595703,
+        "max_probability_delta": 0.0007440930557797154,
+        "all_winners_match": true
+      },
+      "cached_batch_vs_uncached": {
+        "max_logit_delta": 0.02086162567138672,
+        "max_probability_delta": 0.0013810108588161452,
+        "all_winners_match": true
+      },
+      "reversed_batch_vs_original": {
+        "max_logit_delta": 0.0,
+        "max_probability_delta": 0.0,
+        "all_winners_match": true
+      },
+      "prefix_unchanged": true,
+      "branch_batch_sizes": [
+        4
+      ],
+      "warm_seconds": {
+        "uncached": [
+          2.039599666983122,
+          1.9174777079897467,
+          1.8907254159857985
+        ],
+        "cached_batched": [
+          0.5769222080125473,
+          0.5648717090080027,
+          0.5669595829967875
+        ]
+      },
+      "warm_median_seconds": {
+        "uncached": 1.9174777079897467,
+        "cached_batched": 0.5669595829967875
+      },
+      "speedup": 3.3820359783928575
+    },
+    {
+      "state": "speech",
+      "prefix_tokens": 86,
+      "suffix_lengths": [
+        111,
+        99,
+        111,
+        111
+      ],
+      "cached_serial_vs_uncached": {
+        "max_logit_delta": 0.08770561218261719,
+        "max_probability_delta": 0.013604034682185018,
+        "all_winners_match": true
+      },
+      "cached_batch_vs_uncached": {
+        "max_logit_delta": 0.051482200622558594,
+        "max_probability_delta": 0.008151936419399375,
+        "all_winners_match": true
+      },
+      "reversed_batch_vs_original": {
+        "max_logit_delta": 0.0,
+        "max_probability_delta": 0.0,
+        "all_winners_match": true
+      },
+      "prefix_unchanged": true,
+      "branch_batch_sizes": [
+        4
+      ],
+      "warm_seconds": {
+        "uncached": [
+          0.33885545798693784,
+          0.34261837499798276,
+          0.33428337500663474
+        ],
+        "cached_batched": [
+          0.199704833998112,
+          0.19404779098113067,
+          0.18803491699509323
+        ]
+      },
+      "warm_median_seconds": {
+        "uncached": 0.33885545798693784,
+        "cached_batched": 0.19404779098113067
+      },
+      "speedup": 1.7462474387038416
+    },
+    {
+      "state": "video",
+      "prefix_tokens": 328,
+      "suffix_lengths": [
+        111,
+        99,
+        111,
+        111
+      ],
+      "cached_serial_vs_uncached": {
+        "max_logit_delta": 0.007994651794433594,
+        "max_probability_delta": 0.00047290616548957554,
+        "all_winners_match": true
+      },
+      "cached_batch_vs_uncached": {
+        "max_logit_delta": 0.016923904418945312,
+        "max_probability_delta": 0.0007754361118514908,
+        "all_winners_match": true
+      },
+      "reversed_batch_vs_original": {
+        "max_logit_delta": 0.0,
+        "max_probability_delta": 0.0,
+        "all_winners_match": true
+      },
+      "prefix_unchanged": true,
+      "branch_batch_sizes": [
+        4
+      ],
+      "warm_seconds": {
+        "uncached": [
+          1.87490254198201,
+          1.9036407500097994,
+          2.002558832988143
+        ],
+        "cached_batched": [
+          0.6002716670045629,
+          0.5745167080021929,
+          0.6253891669912264
+        ]
+      },
+      "warm_median_seconds": {
+        "uncached": 1.9036407500097994,
+        "cached_batched": 0.6002716670045629
+      },
+      "speedup": 3.1712986879910976
+    },
+    {
+      "state": "video_speech",
+      "prefix_tokens": 431,
+      "suffix_lengths": [
+        111,
+        99,
+        111,
+        111
+      ],
+      "cached_serial_vs_uncached": {
+        "max_logit_delta": 0.05509662628173828,
+        "max_probability_delta": 0.005538062741424418,
+        "all_winners_match": true
+      },
+      "cached_batch_vs_uncached": {
+        "max_logit_delta": 0.03372955322265625,
+        "max_probability_delta": 0.002709010563853226,
+        "all_winners_match": true
+      },
+      "reversed_batch_vs_original": {
+        "max_logit_delta": 0.0,
+        "max_probability_delta": 0.0,
+        "all_winners_match": true
+      },
+      "prefix_unchanged": true,
+      "branch_batch_sizes": [
+        4
+      ],
+      "warm_seconds": {
+        "uncached": [
+          2.368914416991174,
+          2.1928319169965107,
+          2.2464634170173667
+        ],
+        "cached_batched": [
+          0.7086897499975748,
+          0.6427362920076121,
+          0.8200017909985036
+        ]
+      },
+      "warm_median_seconds": {
+        "uncached": 2.2464634170173667,
+        "cached_batched": 0.7086897499975748
+      },
+      "speedup": 3.169882754795105
+    },
+    {
+      "state": "long_text",
+      "prefix_tokens": 1250,
+      "suffix_lengths": [
+        111,
+        99,
+        111,
+        111
+      ],
+      "cached_serial_vs_uncached": {
+        "max_logit_delta": 0.028132915496826172,
+        "max_probability_delta": 1.1824594636777874e-09,
+        "all_winners_match": true
+      },
+      "cached_batch_vs_uncached": {
+        "max_logit_delta": 0.041655540466308594,
+        "max_probability_delta": 2.3831407958141426e-09,
+        "all_winners_match": true
+      },
+      "reversed_batch_vs_original": {
+        "max_logit_delta": 0.0,
+        "max_probability_delta": 0.0,
+        "all_winners_match": true
+      },
+      "prefix_unchanged": true,
+      "branch_batch_sizes": [
+        4
+      ],
+      "warm_seconds": {
+        "uncached": [
+          1.887113375007175,
+          1.7507582920079585,
+          1.7365583749779034
+        ],
+        "cached_batched": [
+          0.5613800830033142,
+          0.5454969170095865,
+          0.5390715000103228
+        ]
+      },
+      "warm_median_seconds": {
+        "uncached": 1.7507582920079585,
+        "cached_batched": 0.5454969170095865
+      },
+      "speedup": 3.2094742195897523
+    }
+  ]
+}

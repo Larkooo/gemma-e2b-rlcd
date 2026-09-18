@@ -1,0 +1,26 @@
+{
+  "compute_dtype": "float16",
+  "state_layers": 4,
+  "results": [
+    {
+      "state": "text",
+      "native_layer_max_abs_delta": 0.0,
+      "dense_vs_indexed_embedding_max_abs_delta": 0.0
+    },
+    {
+      "state": "image",
+      "native_layer_max_abs_delta": 0.0,
+      "dense_vs_indexed_embedding_max_abs_delta": 0.0
+    },
+    {
+      "state": "speech",
+      "native_layer_max_abs_delta": 0.0,
+      "dense_vs_indexed_embedding_max_abs_delta": 0.0
+    },
+    {
+      "state": "video_speech",
+      "native_layer_max_abs_delta": 0.0,
+      "dense_vs_indexed_embedding_max_abs_delta": 0.0
+    }
+  ]
+}

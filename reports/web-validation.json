@@ -1,0 +1,14 @@
+{
+  "version": "0.5.0",
+  "automated_tests": {
+    "passed": 74,
+    "failed": 0
+  },
+  "ruff": "passed",
+  "javascript_syntax": "passed",
+  "browser_ui": "Comparison button, generated JSON validation, both answer columns, elapsed times, and disagreement/error rendering verified. No browser console errors.",
+  "inference_smoke_test": "Text animal example returns matching Choice and independent-label answers through both real paths after prompt-format correction.",
+  "image_benchmark": "No image comparison benchmark was run for this release.",
+  "accuracy_improvement_established": false,
+  "comparison": "One invocation of each path per click; no benchmark repetitions or warm-up runs. Same resident model and media settings. First-use effects may influence single-run times."
+}

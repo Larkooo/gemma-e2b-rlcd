@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f6f4">
+  <title>Decision Lab</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23165749'/%3E%3Cpath d='M8 9h8v5H8zm0 9h16v5H8zm12-9h4v5h-4z' fill='%23e3f2ba'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/static/app.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="Decision Lab home"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>Decision Lab<span class="local-tag">LOCAL</span></a>
+    <div class="model-status"><span id="status-dot" class="status-dot loading"></span><span id="model-status" role="status">Loading Gemma 4 E2B…</span></div>
+  </header>
+  <main>
+    <div class="page-heading">
+      <div><div class="eyebrow">MULTIMODAL PLAYGROUND</div><h1>Evidence in. Decisions out.</h1><p>Add your input, define the outputs, and run every field together.</p></div>
+      <div class="preset-control"><label for="preset">Start with an example</label><select id="preset"><option value="animals">Animal presence</option><option value="video">Dogs & cats in video</option><option value="sentiment">Text sentiment</option><option value="visual">Image grading</option><option value="speech">Speech intent</option><option value="blank">Blank workspace</option></select></div>
+    </div>
+    <div class="workspace">
+      <form id="request-form" class="editor" novalidate>
+        <section class="panel input-panel" aria-labelledby="input-title">
+          <div class="section-heading"><h2 id="input-title"><span class="step">01</span>Input</h2><span class="subtle">Text + media</span></div>
+          <label class="sr-only" for="state-text">Input text</label>
+          <textarea id="state-text" rows="4" placeholder="Paste text, describe a situation, or add context for your media…"></textarea>
+          <div id="dropzone" class="dropzone">
+            <div class="upload-label"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 16V4m-4 4 4-4 4 4M4 15v5h16v-5"/></svg><span>Drop an image, audio, or video<span class="subtle">or choose files from your Mac</span></span></div>
+            <label class="button secondary file-button" for="media-files">Add media<input id="media-files" type="file" multiple accept="image/png,image/jpeg,image/webp,image/bmp,audio/*,video/*"></label>
+          </div>
+          <div class="attachment-tools"><span class="hint">8 images · 1 audio · 1 video · 200 MB total</span><button id="record-button" class="text-button" type="button"><span class="record-dot"></span><span id="record-label">Record speech</span></button></div>
+          <div id="record-status" class="hint" role="status"></div>
+          <div id="attachments" class="attachments"></div>
+          <details class="input-limits"><summary>Media limits</summary><p>Audio: up to 30 seconds. Silent video: up to 60 seconds; video with speech: 30 seconds. Video is sampled at a target of 1 frame/second, capped at 32 frames. Its soundtrack is included automatically. Choose one audio source. Longer inputs are rejected, not trimmed.</p></details>
+          <div class="shared-instructions"><label for="instructions">Shared instructions <span class="subtle">optional</span></label><textarea id="instructions" rows="2" placeholder="For example: judge only what is visible; do not infer from the soundtrack."></textarea></div>
+        </section>
+        <section class="panel schema-panel" aria-labelledby="outputs-title">
+          <div class="section-heading"><h2 id="outputs-title"><span class="step">02</span>Define outputs</h2><button id="edit-json" class="text-button mono" type="button">{ } Edit JSON</button></div>
+          <p class="section-description">Each field has its own question and answer contract.</p>
+          <div id="fields"></div>
+          <button id="add-field" class="add-field" type="button"><span aria-hidden="true">+</span> Add output field</button>
+        </section>
+        <div id="error" class="error" role="alert" hidden></div>
+        <div class="run-bar"><div><strong id="run-count">2 fields</strong><span class="hint">One shared input · batched scoring</span></div><div class="run-actions"><button id="compare-button" class="button secondary" type="submit" disabled>Compare with Gemma</button><button id="run-button" class="button primary" type="submit" disabled><span id="run-label">Run all fields</span><span class="key-hint" aria-hidden="true">⌘ ↵</span></button></div></div>
+      </form>
+      <aside class="results-column" aria-labelledby="results-title">
+        <section class="panel results-panel">
+          <div class="section-heading"><h2 id="results-title"><span class="step">03</span>Results</h2><span id="result-badge" class="result-badge">Ready when you are</span></div>
+          <div class="result-tabs" role="tablist" aria-label="Result view"><button id="view-answers" type="button" role="tab" aria-selected="true" aria-controls="answers-view">Answers</button><button id="view-compare" type="button" role="tab" aria-selected="false" aria-controls="compare-view" hidden>Comparison</button><button id="view-json" type="button" role="tab" aria-selected="false" aria-controls="json-view">JSON</button><button id="export-result" class="text-button" type="button" disabled>Export ↓</button></div>
+          <div id="run-status" class="run-status" role="status" hidden><span class="spinner"></span><span>Processing input and scoring all fields…</span></div>
+          <div id="empty-results" class="empty-results"><div class="empty-diagram" aria-hidden="true"><span class="diagram-source">◈</span><span class="diagram-line"></span><div><span class="diagram-result"><i></i><b></b></span><span class="diagram-result"><i></i><b></b></span><span class="diagram-result"><i></i><b></b></span></div></div><h3>Your outputs, side by side.</h3><p>Run the example or bring your own evidence.<br>Every field returns a structured answer and probabilities.</p><div class="empty-tags"><span>Text</span><span>Image</span><span>Speech</span><span>Video</span></div></div>
+          <div id="timings" class="timings" hidden></div>
+          <div id="answers-view" role="tabpanel" aria-labelledby="view-answers"></div>
+          <div id="compare-view" role="tabpanel" aria-labelledby="view-compare" hidden></div>
+          <div id="json-view" role="tabpanel" aria-labelledby="view-json" hidden><button id="copy-result" class="text-button" type="button">Copy JSON</button><pre id="result-json"></pre></div>
+          <div id="result-footer" class="result-footer" hidden>Probabilities are uncalibrated model estimates. Grades are expected rubric levels, not probabilities of being correct.</div>
+        </section>
+        <div class="runtime-note"><span class="mini-mark" aria-hidden="true">◈</span><div><strong>Runs on your Mac</strong><p>Gemma 4 E2B · full 35-layer frozen scorer.<br>Uploads stay local and are removed after each run.</p></div></div>
+      </aside>
+    </div>
+  </main>
+  <dialog id="schema-dialog" aria-labelledby="schema-dialog-title"><form method="dialog"><div class="section-heading"><h2 id="schema-dialog-title">Edit output schema</h2><button class="icon-button" aria-label="Close schema editor" value="cancel">×</button></div></form><p class="section-description">Use <code>choice</code>, <code>score</code>, <code>independent</code>, or <code>noul</code>. Grade criteria are ordered arrays; other criteria map names to descriptions.</p><label class="sr-only" for="schema-json">Output schema JSON</label><textarea id="schema-json" class="mono" rows="18" spellcheck="false"></textarea><div id="schema-error" class="error" role="alert" hidden></div><div class="dialog-actions"><button id="apply-schema" class="button primary" type="button">Apply schema</button></div></dialog>
+</body>
+</html>

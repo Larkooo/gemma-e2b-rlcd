@@ -1,0 +1,7 @@
+{
+  "repo": "mlx-community/gemma-4-e2b-it-4bit",
+  "revision": "238767527555cb75a05732a84dff5d6ba0dd6809",
+  "upstream_model": "google/gemma-4-E2B-it",
+  "local_directory_example": "models/gemma-4-e2b-it-4bit",
+  "weights_distributed": false
+}

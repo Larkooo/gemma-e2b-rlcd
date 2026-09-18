@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gemma-decisions"
+version = "0.5.0"
+description = "An experimental multimodal typed-decision baseline for Gemma 4 E2B"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE", "THIRD_PARTY_NOTICES.md"]
+authors = [{name = "Larkooo"}]
+keywords = ["gemma", "mlx", "multimodal", "classification", "rlcd"]
+requires-python = ">=3.12"
+dependencies = ["mlx-vlm==0.7.1"]
+
+[project.optional-dependencies]
+dev = ["pytest", "ruff", "httpx"]
+web = ["fastapi", "uvicorn", "python-multipart"]
+
+[project.urls]
+Repository = "https://github.com/Larkooo/gemma-e2b-rlcd"
+Issues = "https://github.com/Larkooo/gemma-e2b-rlcd/issues"
+
+[project.scripts]
+gemma-decide = "gemma_decisions.cli:main"
+gemma-decide-web = "gemma_decisions.web:main"
+
+[tool.setuptools.package-data]
+gemma_decisions = ["static/*"]
+
+[tool.setuptools.packages.find]
+include = ["gemma_decisions*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+ignore = ["E501"]

@@ -1,0 +1,79 @@
+{
+  "answers": {
+    "animal": {
+      "calibration_status": "unvalidated",
+      "temperature": 1.0,
+      "probability_source": "restricted_next_token_logits",
+      "diagnostics": {
+        "logits": {
+          "cat": 14.711406707763672,
+          "dog": -7.430335521697998,
+          "other": -5.548311233520508
+        },
+        "allowed_token_mass": 0.9999990463256836,
+        "input_tokens": 164
+      },
+      "confidence": 0.9999999641376001,
+      "confidence_definition": "one_minus_normalized_entropy",
+      "probabilities": {
+        "cat": 0.9999999981682133,
+        "dog": 2.4208257443645767e-10,
+        "other": 1.5897040929196268e-09
+      },
+      "type": "choice",
+      "choice": "cat",
+      "selected_probability": 0.9999999981682133
+    },
+    "presence": {
+      "calibration_status": "unvalidated",
+      "temperature": 1.0,
+      "probability_source": "restricted_next_token_logits",
+      "type": "independent",
+      "probabilities": {
+        "cat": 0.9784876284221362,
+        "dog": 9.911270087838716e-09
+      },
+      "diagnostics": {
+        "cat": {
+          "logits": {
+            "yes": 10.465391159057617,
+            "no": 6.648011207580566
+          },
+          "allowed_token_mass": 0.999992311000824,
+          "input_tokens": 158
+        },
+        "dog": {
+          "logits": {
+            "yes": -0.7675755023956299,
+            "no": 17.662017822265625
+          },
+          "allowed_token_mass": 0.9999980330467224,
+          "input_tokens": 158
+        }
+      }
+    }
+  },
+  "model": "models/gemma-4-e2b-it-4bit",
+  "load_seconds": 2.818324833002407,
+  "decision_seconds": 0.5153297919896431,
+  "execution": {
+    "execution": "shared_prefix_gpu_batched_branches",
+    "prefix_prefills": 1,
+    "prefix_tokens": 50,
+    "question_suffix_tokens": [
+      114,
+      108,
+      108
+    ],
+    "preprocess_seconds": 0.039328291022684425,
+    "prefill_seconds": 0.09224108399939723,
+    "kv_storage": "replicated_per_batch_row",
+    "compute_dtype": "float32",
+    "branch_batch_sizes": [
+      3
+    ],
+    "branch_seconds": 0.38361333298962563
+  },
+  "video_sampling_fps": null,
+  "video_soundtrack": null
+}

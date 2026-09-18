@@ -1,0 +1,23 @@
+{
+  "validated_at_utc": "2026-09-18T18:00:36.256671+00:00",
+  "version": "0.4.0",
+  "hardware": {
+    "chip": "Apple M5",
+    "unified_memory_bytes": 34359738368
+  },
+  "automated_tests": {
+    "passed": 50,
+    "failed": 0,
+    "seconds": 1.25,
+    "command": "python -m pytest tests -q -o cache_dir=work/pytest-cache"
+  },
+  "ruff_format": "27 source, test, and script files unchanged",
+  "ruff_check": "passed",
+  "installed_source_files_verified": 11,
+  "cached_cli": "passed text Choice and Independent presence checks using default answer gathering",
+  "head_cli": "full-depth checkpoint loads and returns valid typed distributions; its animal prediction is wrong and this is not quality acceptance",
+  "paired_execution_winners_preserved": 48,
+  "full_depth_encoder_exact_matches": 4,
+  "calibration_validated": false,
+  "accuracy_improvement_established": false
+}

@@ -1,0 +1,282 @@
+{
+  "model": "models/gemma-4-e2b-it-4bit",
+  "status": "cache_numerics_and_timing_probe_not_quality_benchmark",
+  "results": [
+    {
+      "state": "text",
+      "prefix_tokens": 50,
+      "suffix_lengths": [
+        111,
+        99,
+        111,
+        111
+      ],
+      "cached_serial_vs_uncached": {
+        "max_logit_delta": 1.15625,
+        "max_probability_delta": 4.3084425290461535e-05,
+        "all_winners_match": true
+      },
+      "cached_batch_vs_uncached": {
+        "max_logit_delta": 1.65625,
+        "max_probability_delta": 5.5105002298472456e-05,
+        "all_winners_match": true
+      },
+      "reversed_batch_vs_original": {
+        "max_logit_delta": 0.0,
+        "max_probability_delta": 0.0,
+        "all_winners_match": true
+      },
+      "prefix_unchanged": true,
+      "branch_batch_sizes": [
+        4
+      ],
+      "warm_seconds": {
+        "uncached": [
+          0.30837187499855645,
+          0.29970408300869167,
+          0.3233241660054773
+        ],
+        "cached_batched": [
+          0.38295441700029187,
+          0.3663168329803739,
+          0.4002443749923259
+        ]
+      },
+      "warm_median_seconds": {
+        "uncached": 0.30837187499855645,
+        "cached_batched": 0.38295441700029187
+      },
+      "speedup": 0.8052443353808384
+    },
+    {
+      "state": "image",
+      "prefix_tokens": 295,
+      "suffix_lengths": [
+        111,
+        99,
+        111,
+        111
+      ],
+      "cached_serial_vs_uncached": {
+        "max_logit_delta": 1.8125,
+        "max_probability_delta": 0.08184582251343775,
+        "all_winners_match": true
+      },
+      "cached_batch_vs_uncached": {
+        "max_logit_delta": 1.5,
+        "max_probability_delta": 0.07954127470411075,
+        "all_winners_match": true
+      },
+      "reversed_batch_vs_original": {
+        "max_logit_delta": 0.0,
+        "max_probability_delta": 0.0,
+        "all_winners_match": true
+      },
+      "prefix_unchanged": true,
+      "branch_batch_sizes": [
+        4
+      ],
+      "warm_seconds": {
+        "uncached": [
+          2.9452710000041407,
+          2.088067457982106,
+          2.104747708013747
+        ],
+        "cached_batched": [
+          0.8102280829916708,
+          0.8053822079964448,
+          0.8086074579914566
+        ]
+      },
+      "warm_median_seconds": {
+        "uncached": 2.104747708013747,
+        "cached_batched": 0.8086074579914566
+      },
+      "speedup": 2.6029288837402547
+    },
+    {
+      "state": "speech",
+      "prefix_tokens": 86,
+      "suffix_lengths": [
+        111,
+        99,
+        111,
+        111
+      ],
+      "cached_serial_vs_uncached": {
+        "max_logit_delta": 0.6875,
+        "max_probability_delta": 0.1209109506311471,
+        "all_winners_match": true
+      },
+      "cached_batch_vs_uncached": {
+        "max_logit_delta": 0.6875,
+        "max_probability_delta": 0.13835689201493084,
+        "all_winners_match": true
+      },
+      "reversed_batch_vs_original": {
+        "max_logit_delta": 0.0,
+        "max_probability_delta": 0.0,
+        "all_winners_match": true
+      },
+      "prefix_unchanged": true,
+      "branch_batch_sizes": [
+        4
+      ],
+      "warm_seconds": {
+        "uncached": [
+          0.390588584006764,
+          0.3957693339907564,
+          0.3943458329886198
+        ],
+        "cached_batched": [
+          0.3282808749936521,
+          0.3258304579940159,
+          0.3353305420023389
+        ]
+      },
+      "warm_median_seconds": {
+        "uncached": 0.3943458329886198,
+        "cached_batched": 0.3282808749936521
+      },
+      "speedup": 1.2012452233053332
+    },
+    {
+      "state": "video",
+      "prefix_tokens": 328,
+      "suffix_lengths": [
+        111,
+        99,
+        111,
+        111
+      ],
+      "cached_serial_vs_uncached": {
+        "max_logit_delta": 0.40625,
+        "max_probability_delta": 0.016064510780345466,
+        "all_winners_match": true
+      },
+      "cached_batch_vs_uncached": {
+        "max_logit_delta": 0.5,
+        "max_probability_delta": 0.022443869382056524,
+        "all_winners_match": true
+      },
+      "reversed_batch_vs_original": {
+        "max_logit_delta": 0.0,
+        "max_probability_delta": 0.0,
+        "all_winners_match": true
+      },
+      "prefix_unchanged": true,
+      "branch_batch_sizes": [
+        4
+      ],
+      "warm_seconds": {
+        "uncached": [
+          1.817464583000401,
+          1.9493792499997653,
+          1.6563971669820603
+        ],
+        "cached_batched": [
+          0.7273326250142418,
+          0.7425714999844786,
+          0.6501901249866933
+        ]
+      },
+      "warm_median_seconds": {
+        "uncached": 1.817464583000401,
+        "cached_batched": 0.7273326250142418
+      },
+      "speedup": 2.4988080013113856
+    },
+    {
+      "state": "video_speech",
+      "prefix_tokens": 431,
+      "suffix_lengths": [
+        111,
+        99,
+        111,
+        111
+      ],
+      "cached_serial_vs_uncached": {
+        "max_logit_delta": 1.1875,
+        "max_probability_delta": 0.18137001888040638,
+        "all_winners_match": true
+      },
+      "cached_batch_vs_uncached": {
+        "max_logit_delta": 1.4375,
+        "max_probability_delta": 0.20775812578824238,
+        "all_winners_match": true
+      },
+      "reversed_batch_vs_original": {
+        "max_logit_delta": 0.0,
+        "max_probability_delta": 0.0,
+        "all_winners_match": true
+      },
+      "prefix_unchanged": true,
+      "branch_batch_sizes": [
+        4
+      ],
+      "warm_seconds": {
+        "uncached": [
+          1.982235583011061,
+          2.0264377089915797,
+          2.0417945420194883
+        ],
+        "cached_batched": [
+          0.7379775000154041,
+          0.7445563329965807,
+          0.7704525000008289
+        ]
+      },
+      "warm_median_seconds": {
+        "uncached": 2.0264377089915797,
+        "cached_batched": 0.7445563329965807
+      },
+      "speedup": 2.721671442691074
+    },
+    {
+      "state": "long_text",
+      "prefix_tokens": 1250,
+      "suffix_lengths": [
+        111,
+        99,
+        111,
+        111
+      ],
+      "cached_serial_vs_uncached": {
+        "max_logit_delta": 1.28125,
+        "max_probability_delta": 7.581746597207228e-08,
+        "all_winners_match": true
+      },
+      "cached_batch_vs_uncached": {
+        "max_logit_delta": 1.390625,
+        "max_probability_delta": 1.2115263459122616e-07,
+        "all_winners_match": true
+      },
+      "reversed_batch_vs_original": {
+        "max_logit_delta": 0.0,
+        "max_probability_delta": 0.0,
+        "all_winners_match": true
+      },
+      "prefix_unchanged": true,
+      "branch_batch_sizes": [
+        4
+      ],
+      "warm_seconds": {
+        "uncached": [
+          1.2670293750124983,
+          1.2486699169967324,
+          1.2255972499842755
+        ],
+        "cached_batched": [
+          0.6019650840025861,
+          0.5762567500059959,
+          0.592385583993746
+        ]
+      },
+      "warm_median_seconds": {
+        "uncached": 1.2486699169967324,
+        "cached_batched": 0.592385583993746
+      },
+      "speedup": 2.107866819746773
+    }
+  ]
+}
