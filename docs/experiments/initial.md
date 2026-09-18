@@ -16,7 +16,7 @@ The frozen Gemma 4 E2B model successfully processed text, image, speech, video, 
 
 The text grading failure assigned roughly 99.98% probability to the wrong level. The combined video/speech input classified the spoken animal correctly, then incorrectly answered the separate dog-presence proposition. These errors directly show why a typed output and highly concentrated probabilities are not enough. Both failures remain in the saved report.
 
-The inference run used one loaded model and sequential questions. First-use kernel compilation, preprocessing, media encoders, and decoder execution all contribute to the recorded per-call times. These are single observations, not controlled warm/cold latency measurements. Do not compare them to Jev's advertised latency. The processor also emitted an empty-mel-filter warning at load time; broader speech-quality validation remains necessary.
+The inference run used one loaded model and sequential questions. First-use kernel compilation, preprocessing, media encoders, and decoder execution all contribute to the recorded per-call times. These are single observations, not controlled warm/cold latency measurements. The processor also emitted an empty-mel-filter warning at load time; broader speech-quality validation remains necessary.
 
 ## Reproduce
 

@@ -178,8 +178,24 @@ $("#add-field").addEventListener("click", () => {
   $("#fields .field:last-child input").focus();
 });
 
-function loadPreset(name) {
+let presetRequest = 0;
+async function loadPreset(name) {
+  const request = ++presetRequest;
+  const textDemos = ["support_matrix", "inbox_matrix", "ticket_flags", "catalog_choices"];
+  if (textDemos.includes(name) && !Object.hasOwn(presets, name)) {
+    try {
+      const response = await fetch("/static/demo-presets.json");
+      if (!response.ok) throw new Error("Could not load the examples. Refresh the page and try again.");
+      Object.assign(presets, await response.json());
+    } catch (error) { if (request === presetRequest) showError(error.message); return; }
+  }
+  if (request !== presetRequest) return;
   const preset = presets[name];
+  if (textDemos.includes(name)) {
+    attachments.forEach((item) => URL.revokeObjectURL(item.url));
+    attachments = [];
+    renderAttachments();
+  }
   $("#state-text").value = preset.text;
   $("#instructions").value = preset.instructions;
   fields = fieldsFromSchema(preset.questions);
@@ -372,8 +388,8 @@ function renderResults() {
   const execution = data.execution;
   const stages = [(data.media_prepare_seconds || 0) + (execution.preprocess_seconds || 0), execution.prefill_seconds || 0, execution.branch_seconds || 0];
   const stageSum = stages.reduce((sum, value) => sum + value, 0) || 1;
-  const batches = execution.branch_batch_sizes || [];
-  const decisions = batches.reduce((sum, count) => sum + count, 0);
+  const batches = [...(execution.branch_batch_sizes || []), ...(execution.candidate_batch_sizes || [])];
+  const decisions = execution.primitive_fields ?? batches.reduce((sum, count) => sum + count, 0);
   const timingSeconds = data.comparison ? data.comparison.seconds.parallel : data.browser_round_trip_seconds;
   $("#timings").innerHTML = `<div class="timing-head"><div class="timing-number">${Math.round(timingSeconds * 1000).toLocaleString()}<span>ms ${data.comparison ? "parallel scorer" : "total"}</span></div><div class="timing-caption">${decisions} ${decisions === 1 ? "decision" : "decisions"} · ${batches.length} GPU ${batches.length === 1 ? "batch" : "batches"}</div></div><div class="timing-bar" aria-hidden="true">${stages.map((value) => `<i style="width:${value / stageSum * 100}%"></i>`).join("")}</div><div class="timing-legend">${stages.map((value, index) => `<span>${["Prepare input", "Shared state", "Score fields"][index]} <b>${Math.round(value * 1000)} ms</b></span>`).join("")}</div>`;
   renderComparison(data.comparison);

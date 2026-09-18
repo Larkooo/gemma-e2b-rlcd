@@ -31,13 +31,13 @@ def read_request(path: Path) -> tuple[State, dict]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Gemma multimodal typed decisions (uncalibrated baseline)"
+        description="Gemma E2B RLCD — parallel multimodal classification and grading"
     )
     parser.add_argument("request", type=Path)
     parser.add_argument("--model", required=True, help="Full multimodal Gemma 4 E2B MLX checkpoint")
     parser.add_argument("--temperature", type=float, default=1.0)
     parser.add_argument("--branch-batch-size", type=int, default=8)
-    parser.add_argument("--backend", choices=["cached", "catalog", "head"], default="cached")
+    parser.add_argument("--backend", choices=["json", "cached", "catalog", "head"], default="json")
     parser.add_argument("--head-checkpoint", type=Path)
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
@@ -65,8 +65,12 @@ def main() -> None:
         from .catalog_backend import CatalogMLXBackend
 
         backend = CatalogMLXBackend(args.model, branch_batch_size=args.branch_batch_size)
-    else:
+    elif args.backend == "cached":
         backend = CachedMLXBackend(args.model, branch_batch_size=args.branch_batch_size)
+    else:
+        from .json_backend import JSONMLXBackend
+
+        backend = JSONMLXBackend(args.model, branch_batch_size=args.branch_batch_size)
     loaded = time.perf_counter()
     result = DecisionEngine(backend, args.temperature).system_one(state, questions)
     result.update(

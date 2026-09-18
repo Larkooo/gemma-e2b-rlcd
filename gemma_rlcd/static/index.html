@@ -4,20 +4,20 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f5f6f4">
-  <title>Decision Lab</title>
+  <title>Gemma E2B RLCD</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23165749'/%3E%3Cpath d='M8 9h8v5H8zm0 9h16v5H8zm12-9h4v5h-4z' fill='%23e3f2ba'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="/static/app.css">
   <script src="/static/app.js" defer></script>
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="/" aria-label="Decision Lab home"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>Decision Lab<span class="local-tag">LOCAL</span></a>
+    <a class="brand" href="/" aria-label="Gemma E2B RLCD home"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>Gemma E2B RLCD<span class="local-tag">LOCAL</span></a>
     <div class="model-status"><span id="status-dot" class="status-dot loading"></span><span id="model-status" role="status">Loading Gemma 4 E2B…</span></div>
   </header>
   <main>
     <div class="page-heading">
       <div><div class="eyebrow">MULTIMODAL PLAYGROUND</div><h1>Evidence in. Decisions out.</h1><p>Add your input, define the outputs, and run every field together.</p></div>
-      <div class="preset-control"><label for="preset">Start with an example</label><select id="preset"><option value="animals">Animal presence</option><option value="video">Dogs & cats in video</option><option value="sentiment">Text sentiment</option><option value="visual">Image grading</option><option value="speech">Speech intent</option><option value="blank">Blank workspace</option></select></div>
+      <div class="preset-control"><label for="preset">Start with an example</label><select id="preset"><option value="animals">Animal presence</option><option value="support_matrix">Support triage · 28 fields</option><option value="inbox_matrix">Customer inbox · 32 decisions</option><option value="ticket_flags">Incident facts · 32 labels</option><option value="catalog_choices">Catalog routing · 64 choices</option><option value="video">Dogs & cats in video</option><option value="sentiment">Text sentiment</option><option value="visual">Image grading</option><option value="speech">Speech intent</option><option value="blank">Blank workspace</option></select></div>
     </div>
     <div class="workspace">
       <form id="request-form" class="editor" novalidate>

@@ -3,9 +3,9 @@ requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "gemma-decisions"
+name = "gemma-e2b-rlcd"
 version = "0.5.0"
-description = "An experimental multimodal typed-decision baseline for Gemma 4 E2B"
+description = "Parallel multimodal classification and grading with Gemma 4 E2B"
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE", "THIRD_PARTY_NOTICES.md"]
@@ -23,14 +23,14 @@ Repository = "https://github.com/Larkooo/gemma-e2b-rlcd"
 Issues = "https://github.com/Larkooo/gemma-e2b-rlcd/issues"
 
 [project.scripts]
-gemma-decide = "gemma_decisions.cli:main"
-gemma-decide-web = "gemma_decisions.web:main"
+gemma-rlcd = "gemma_rlcd.cli:main"
+gemma-rlcd-web = "gemma_rlcd.web:main"
 
 [tool.setuptools.package-data]
-gemma_decisions = ["static/*"]
+gemma_rlcd = ["static/*"]
 
 [tool.setuptools.packages.find]
-include = ["gemma_decisions*"]
+include = ["gemma_rlcd*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

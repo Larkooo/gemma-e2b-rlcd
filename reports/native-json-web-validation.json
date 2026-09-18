@@ -1,0 +1,582 @@
+{
+  "scope": "Local web runtime integration checks, not a general accuracy or speed benchmark. Full-video expected values are prior baseline outputs, not independently annotated ground truth.",
+  "cases": [
+    {
+      "name": "skunks_full_soundtrack",
+      "spec": {
+        "text": "",
+        "questions": {
+          "Baby skunks": {
+            "type": "score",
+            "instructions": "Count the baby skunks visible at the same time in this video. Do not count the same animal again across frames. Choose the closest count.",
+            "criteria": [
+              "0 baby skunks",
+              "1 baby skunks",
+              "2 baby skunks",
+              "3 baby skunks",
+              "4 baby skunks",
+              "5 baby skunks",
+              "6 baby skunks",
+              "7 baby skunks",
+              "8 baby skunks",
+              "9 baby skunks"
+            ]
+          },
+          "Dog": {
+            "type": "score",
+            "instructions": "Count the dogs visible at the same time in this video. Do not count the same animal again across frames. Choose the closest count.",
+            "criteria": [
+              "0 dogs",
+              "1 dogs",
+              "2 dogs",
+              "3 dogs",
+              "4 dogs",
+              "5 dogs",
+              "6 dogs",
+              "7 dogs",
+              "8 dogs",
+              "9 dogs"
+            ]
+          }
+        },
+        "media": [
+          {
+            "kind": "video",
+            "name": "skunks-full.mp4"
+          }
+        ]
+      },
+      "media_sha256": "94860ab16790f8a4e6ae9c86c97e35322e1e4f58e2695c593dca0d5c5b170148",
+      "expected": {
+        "Baby skunks": 5,
+        "Dog": 1
+      },
+      "result": {
+        "answers": {
+          "Baby skunks": {
+            "calibration_status": "unvalidated",
+            "temperature": 1.0,
+            "probability_source": "restricted_json_value_likelihoods",
+            "diagnostics": {
+              "logits": {
+                "0": 15.440519332885742,
+                "1": 18.91536521911621,
+                "2": 17.52647590637207,
+                "3": 17.263118743896484,
+                "4": 17.27484130859375,
+                "5": 25.10904312133789,
+                "6": 19.844194412231445,
+                "7": 18.685335159301758,
+                "8": 18.2138671875,
+                "9": 19.023639678955078
+              },
+              "allowed_token_mass": 0.9999809265136719,
+              "input_tokens": 2442
+            },
+            "confidence": 0.9591435032147506,
+            "confidence_definition": "one_minus_normalized_entropy",
+            "probabilities": {
+              "0": 6.240175840612261e-05,
+              "1": 0.002015130710062158,
+              "2": 0.0005024770805513657,
+              "3": 0.000386137245892033,
+              "4": 0.00039069039991983777,
+              "5": 0.9866959764138694,
+              "6": 0.005101391037174207,
+              "7": 0.0016010409348640024,
+              "8": 0.0009991863613793212,
+              "9": 0.002245568057881544
+            },
+            "type": "score",
+            "score": 5.00924037645693,
+            "legend": {
+              "0": "0 baby skunks",
+              "1": "1 baby skunks",
+              "2": "2 baby skunks",
+              "3": "3 baby skunks",
+              "4": "4 baby skunks",
+              "5": "5 baby skunks",
+              "6": "6 baby skunks",
+              "7": "7 baby skunks",
+              "8": "8 baby skunks",
+              "9": "9 baby skunks"
+            }
+          },
+          "Dog": {
+            "calibration_status": "unvalidated",
+            "temperature": 1.0,
+            "probability_source": "restricted_json_value_likelihoods",
+            "diagnostics": {
+              "logits": {
+                "0": 16.827749252319336,
+                "1": 24.871902465820312,
+                "2": 18.862998962402344,
+                "3": 17.827789306640625,
+                "4": 18.372800827026367,
+                "5": 17.98102569580078,
+                "6": 16.684083938598633,
+                "7": 16.508058547973633,
+                "8": 17.43865203857422,
+                "9": 19.051477432250977
+              },
+              "allowed_token_mass": 0.9999866485595703,
+              "input_tokens": 2440
+            },
+            "confidence": 0.9671310741513678,
+            "confidence_definition": "one_minus_normalized_entropy",
+            "probabilities": {
+              "0": 0.0003177193855978654,
+              "1": 0.9898629433627016,
+              "2": 0.0024318760318991664,
+              "3": 0.000863685426060581,
+              "4": 0.0014895362854541818,
+              "5": 0.0010067121486512969,
+              "6": 0.00027520141403579993,
+              "7": 0.0002307829950513383,
+              "8": 0.0005852688675128792,
+              "9": 0.0029362740830353746
+            },
+            "type": "score",
+            "score": 1.0426847647267505,
+            "legend": {
+              "0": "0 dogs",
+              "1": "1 dogs",
+              "2": "2 dogs",
+              "3": "3 dogs",
+              "4": "4 dogs",
+              "5": "5 dogs",
+              "6": "6 dogs",
+              "7": "7 dogs",
+              "8": "8 dogs",
+              "9": "9 dogs"
+            }
+          }
+        },
+        "inference_seconds": 3.0780157500121277,
+        "execution": {
+          "execution": "shared_json_prefix_gpu_batched_fields",
+          "prefix_prefills": 1,
+          "prefix_tokens": 2436,
+          "primitive_fields": 2,
+          "question_suffix_tokens": [
+            6,
+            4
+          ],
+          "candidate_token_lengths": [
+            [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ]
+          ],
+          "preprocess_seconds": 0.6728912920225412,
+          "prefill_seconds": 2.3704014160030056,
+          "branch_seconds": 0.0345094169897493,
+          "branch_batch_sizes": [
+            2
+          ],
+          "candidate_batch_sizes": [],
+          "compute_dtype": "float32",
+          "kv_storage": "replicated_per_batch_row",
+          "conditioning": "shared complete question schema; no previous field answers"
+        },
+        "valid": true,
+        "total_seconds": 6.285174749995349,
+        "media": [
+          {
+            "name": "skunks-full.mp4",
+            "kind": "video",
+            "bytes": 2935259,
+            "duration_seconds": 21.161042,
+            "has_soundtrack": true
+          }
+        ],
+        "media_prepare_seconds": 0.05148224998265505,
+        "decision_seconds": 3.0780157500121277,
+        "model": "Gemma 4 E2B \u00b7 frozen scorer",
+        "load_seconds": 3.548284250020515,
+        "comparison": {
+          "seconds": {
+            "parallel": 3.1294979999947827,
+            "normal": 3.179176165984245
+          },
+          "normal_over_parallel": 1.0158741644792695,
+          "parallel_values": {
+            "Baby skunks": 5,
+            "Dog": 1
+          },
+          "normal": {
+            "answers": {
+              "Baby skunks": 5,
+              "Dog": 1
+            },
+            "raw_text": "{\"Baby skunks\": 5, \"Dog\": 1}",
+            "valid": true,
+            "error": null,
+            "finish_reason": "stop",
+            "input_tokens": 2436,
+            "output_tokens": 15,
+            "max_output_tokens": 128,
+            "preprocess_seconds": 0.5861692079924978,
+            "generation_seconds": 2.5414814579999074,
+            "inference_seconds": 3.12769391600159,
+            "total_seconds": 3.179176165984245
+          },
+          "agreement": {
+            "Baby skunks": true,
+            "Dog": true
+          },
+          "methodology": {
+            "model": "Same resident Gemma 4 E2B 4-bit weights; float32 compute; all 35 layers",
+            "timing": "One run per path, parallel scorer first, normal generation second. Includes input preparation and inference; shared upload decoding added equally to each path. Excludes model loading, upload transfer, and allocator reset. No warm-up runs; first-use effects and run order can affect this observation.",
+            "cache": "Fresh input KV and media features for every run; ordinary output-token KV caching remains enabled for normal generation.",
+            "answers": "Normal Gemma generates one JSON object for all fields, greedily, without thinking. Compare choice names, most likely grade levels, and booleans at a 50% threshold. The scorer also returns probability distributions and expected grades. Agreement is not an accuracy measurement."
+          }
+        },
+        "request_seconds": 6.292751375003718
+      }
+    },
+    {
+      "name": "speech_skunks",
+      "spec": {
+        "text": "",
+        "media": [
+          {
+            "kind": "audio",
+            "name": "skunks.wav"
+          }
+        ],
+        "questions": {
+          "skunks": {
+            "type": "score",
+            "instructions": "How many baby skunks does the speaker say there are?",
+            "criteria": [
+              "0 baby skunks",
+              "1 baby skunks",
+              "2 baby skunks",
+              "3 baby skunks",
+              "4 baby skunks",
+              "5 baby skunks",
+              "6 baby skunks",
+              "7 baby skunks",
+              "8 baby skunks",
+              "9 baby skunks"
+            ]
+          },
+          "dogs": {
+            "type": "score",
+            "instructions": "How many dogs does the speaker say there are?",
+            "criteria": [
+              "0 dogs",
+              "1 dogs",
+              "2 dogs",
+              "3 dogs",
+              "4 dogs",
+              "5 dogs",
+              "6 dogs",
+              "7 dogs",
+              "8 dogs",
+              "9 dogs"
+            ]
+          },
+          "call_vet": {
+            "type": "noul",
+            "instructions": "Does the speaker request that we call the vet?"
+          },
+          "action": {
+            "type": "choice",
+            "instructions": "What does the speaker ask us to do?",
+            "criteria": {
+              "Call the vet": "Call the vet",
+              "Do not call the vet": "Do not call the vet"
+            }
+          }
+        }
+      },
+      "media_sha256": "2b4e20e573eab19383d212d0bc718f97c0ad2da1c9c9120c506a5f17753abddc",
+      "expected": {
+        "skunks": 5,
+        "dogs": 1,
+        "call_vet": false,
+        "action": "Do not call the vet"
+      },
+      "result": {
+        "answers": {
+          "skunks": {
+            "calibration_status": "unvalidated",
+            "temperature": 1.0,
+            "probability_source": "restricted_json_value_likelihoods",
+            "diagnostics": {
+              "logits": {
+                "0": 2.4332430362701416,
+                "1": 0.33744150400161743,
+                "2": 0.49974024295806885,
+                "3": 1.0511709451675415,
+                "4": 2.741050958633423,
+                "5": 20.806188583374023,
+                "6": 2.202913999557495,
+                "7": -1.8478120565414429,
+                "8": -2.2469234466552734,
+                "9": 0.48146724700927734
+              },
+              "allowed_token_mass": 1.0,
+              "input_tokens": 620
+            },
+            "confidence": 0.9999996565698799,
+            "confidence_definition": "one_minus_normalized_entropy",
+            "probabilities": {
+              "0": 1.0488928261791463e-08,
+              "1": 1.2898406934682289e-09,
+              "2": 1.5171255458984183e-09,
+              "3": 2.6333272442131735e-09,
+              "4": 1.4269553933267914e-08,
+              "5": 0.9999999597381529,
+              "6": 8.331064281204806e-09,
+              "7": 1.4504157649251244e-10,
+              "8": 9.731070908143261e-11,
+              "9": 1.4896548671182722e-09
+            },
+            "type": "score",
+            "score": 4.999999933180111,
+            "legend": {
+              "0": "0 baby skunks",
+              "1": "1 baby skunks",
+              "2": "2 baby skunks",
+              "3": "3 baby skunks",
+              "4": "4 baby skunks",
+              "5": "5 baby skunks",
+              "6": "6 baby skunks",
+              "7": "7 baby skunks",
+              "8": "8 baby skunks",
+              "9": "9 baby skunks"
+            }
+          },
+          "dogs": {
+            "calibration_status": "unvalidated",
+            "temperature": 1.0,
+            "probability_source": "restricted_json_value_likelihoods",
+            "diagnostics": {
+              "logits": {
+                "0": 12.110952377319336,
+                "1": 25.3037166595459,
+                "2": 9.88134765625,
+                "3": 6.69423246383667,
+                "4": 8.310088157653809,
+                "5": 7.257328510284424,
+                "6": 6.1623053550720215,
+                "7": 4.915668487548828,
+                "8": 5.334745407104492,
+                "9": 7.838923931121826
+              },
+              "allowed_token_mass": 1.0,
+              "input_tokens": 619
+            },
+            "confidence": 0.9999862804353773,
+            "confidence_definition": "one_minus_normalized_entropy",
+            "probabilities": {
+              "0": 1.86403615456672e-06,
+              "1": 0.9999978365667048,
+              "2": 2.005161255538126e-07,
+              "3": 8.279474314556474e-09,
+              "4": 4.16639052158653e-08,
+              "5": 1.4539593643851128e-08,
+              "6": 4.863957315537724e-09,
+              "7": 1.3982416759546908e-09,
+              "8": 2.126106602756648e-09,
+              "9": 2.6009736406271668e-08
+            },
+            "type": "score",
+            "score": 0.9999987918588841,
+            "legend": {
+              "0": "0 dogs",
+              "1": "1 dogs",
+              "2": "2 dogs",
+              "3": "3 dogs",
+              "4": "4 dogs",
+              "5": "5 dogs",
+              "6": "6 dogs",
+              "7": "7 dogs",
+              "8": "8 dogs",
+              "9": "9 dogs"
+            }
+          },
+          "call_vet": {
+            "calibration_status": "unvalidated",
+            "temperature": 1.0,
+            "probability_source": "restricted_json_value_likelihoods",
+            "diagnostics": {
+              "logits": {
+                "true": -0.8286030292510986,
+                "false": 6.238976955413818
+              },
+              "allowed_token_mass": 0.999083399772644,
+              "input_tokens": 620
+            },
+            "type": "noul",
+            "noul": 0.0008515673929433828
+          },
+          "action": {
+            "calibration_status": "unvalidated",
+            "temperature": 1.0,
+            "probability_source": "restricted_json_value_likelihoods",
+            "diagnostics": {
+              "logits": {
+                "Call the vet": -40.304771423339844,
+                "Do not call the vet": -23.257143020629883
+              },
+              "allowed_token_mass": 7.93507687306582e-11,
+              "input_tokens": 624
+            },
+            "confidence": 0.9999989722115856,
+            "confidence_definition": "one_minus_normalized_entropy",
+            "probabilities": {
+              "Call the vet": 3.947380923962134e-08,
+              "Do not call the vet": 0.9999999605261907
+            },
+            "type": "choice",
+            "choice": "Do not call the vet",
+            "selected_probability": 0.9999999605261907
+          }
+        },
+        "inference_seconds": 0.27987883301102556,
+        "execution": {
+          "execution": "shared_json_prefix_gpu_batched_fields",
+          "prefix_prefills": 1,
+          "prefix_tokens": 615,
+          "primitive_fields": 4,
+          "question_suffix_tokens": [
+            5,
+            4,
+            5,
+            4
+          ],
+          "candidate_token_lengths": [
+            [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            [
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              4,
+              6
+            ]
+          ],
+          "preprocess_seconds": 0.043527457979507744,
+          "prefill_seconds": 0.153558875026647,
+          "branch_seconds": 0.08244479197310284,
+          "branch_batch_sizes": [
+            3
+          ],
+          "candidate_batch_sizes": [
+            2
+          ],
+          "compute_dtype": "float32",
+          "kv_storage": "replicated_per_batch_row",
+          "conditioning": "shared complete question schema; no previous field answers"
+        },
+        "valid": true,
+        "total_seconds": 1.0800352079968434,
+        "media": [
+          {
+            "name": "skunks.wav",
+            "kind": "audio",
+            "bytes": 148568,
+            "duration_seconds": 4.51475,
+            "has_soundtrack": false
+          }
+        ],
+        "media_prepare_seconds": 0.10681216599186882,
+        "decision_seconds": 0.27987883301102556,
+        "model": "Gemma 4 E2B \u00b7 frozen scorer",
+        "load_seconds": 3.548284250020515,
+        "comparison": {
+          "seconds": {
+            "parallel": 0.3866909990028944,
+            "normal": 0.7924858739716001
+          },
+          "normal_over_parallel": 2.0494034668897694,
+          "parallel_values": {
+            "skunks": 5,
+            "dogs": 1,
+            "call_vet": false,
+            "action": "Do not call the vet"
+          },
+          "normal": {
+            "answers": {
+              "skunks": 5,
+              "dogs": 1,
+              "call_vet": false,
+              "action": "Do not call the vet"
+            },
+            "raw_text": "{\"skunks\": 5, \"dogs\": 1, \"call_vet\": false, \"action\": \"Do not call the vet\"}",
+            "valid": true,
+            "error": null,
+            "finish_reason": "stop",
+            "input_tokens": 615,
+            "output_tokens": 31,
+            "max_output_tokens": 128,
+            "preprocess_seconds": 0.03355474999989383,
+            "generation_seconds": 0.6520849579828791,
+            "inference_seconds": 0.6856737079797313,
+            "total_seconds": 0.7924858739716001
+          },
+          "agreement": {
+            "skunks": true,
+            "dogs": true,
+            "call_vet": true,
+            "action": true
+          },
+          "methodology": {
+            "model": "Same resident Gemma 4 E2B 4-bit weights; float32 compute; all 35 layers",
+            "timing": "One run per path, parallel scorer first, normal generation second. Includes input preparation and inference; shared upload decoding added equally to each path. Excludes model loading, upload transfer, and allocator reset. No warm-up runs; first-use effects and run order can affect this observation.",
+            "cache": "Fresh input KV and media features for every run; ordinary output-token KV caching remains enabled for normal generation.",
+            "answers": "Normal Gemma generates one JSON object for all fields, greedily, without thinking. Compare choice names, most likely grade levels, and booleans at a 50% threshold. The scorer also returns probability distributions and expected grades. Agreement is not an accuracy measurement."
+          }
+        },
+        "request_seconds": 1.0820253329875413
+      }
+    }
+  ]
+}

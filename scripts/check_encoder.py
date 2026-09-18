@@ -6,9 +6,9 @@ from pathlib import Path
 
 from mlx_vlm.models.gemma4.vision import VisionPatchEmbedder
 
-from gemma_decisions import State
-from gemma_decisions.core import ScoringRequest
-from gemma_decisions.head_backend import DecisionHeadBackend
+from gemma_rlcd import State
+from gemma_rlcd.core import ScoringRequest
+from gemma_rlcd.head_backend import DecisionHeadBackend
 
 
 def main():

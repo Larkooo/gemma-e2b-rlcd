@@ -1,7 +1,7 @@
 import pytest
 
 mx = pytest.importorskip("mlx.core")
-vision = pytest.importorskip("gemma_decisions.vision")
+vision = pytest.importorskip("gemma_rlcd.vision")
 config_module = pytest.importorskip("mlx_vlm.models.gemma4.config")
 
 

@@ -10,9 +10,9 @@ from benchmark_head import requests_for
 from check_cache import compare
 from mlx_vlm.models.gemma4.vision import VisionPatchEmbedder
 
-from gemma_decisions import State
-from gemma_decisions.cached_backend import CachedMLXBackend
-from gemma_decisions.core import softmax
+from gemma_rlcd import State
+from gemma_rlcd.cached_backend import CachedMLXBackend
+from gemma_rlcd.core import softmax
 
 
 def main():

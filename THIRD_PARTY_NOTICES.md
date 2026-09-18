@@ -2,7 +2,7 @@
 
 ## MLX-VLM
 
-This project integrates [MLX-VLM](https://github.com/Blaizzy/mlx-vlm). Its Gemma-specific adapters in `gemma_decisions/answer_positions.py` and `gemma_decisions/vision.py` follow and adapt the upstream Gemma implementation. The upstream license is retained below.
+This project integrates [MLX-VLM](https://github.com/Blaizzy/mlx-vlm). Its Gemma-specific adapters in `gemma_rlcd/answer_positions.py` and `gemma_rlcd/vision.py` follow and adapt the upstream Gemma implementation. The upstream license is retained below.
 
 MIT License
 
@@ -37,4 +37,10 @@ The project's MIT license applies to project code and synthetic examples, not th
 
 ## Research attribution
 
-The typed-decision interface and RLCD research direction are inspired by [TypeSafe's public Jev description](https://typesafe.ai/blog/introducing-system-one-models-and-jev). No TypeSafe source code, proprietary training recipe, or model weights are included. The project is not affiliated with TypeSafe or Google.
+### Public parallel-decoding demo fixtures
+
+`examples/demo-workloads.json` and the support-ticket and catalog portions of `gemma_rlcd/static/demo-presets.json` adapt public example data from [harshatheg/Qwen-2.5-1B-RLCD](https://huggingface.co/harshatheg/Qwen-2.5-1B-RLCD), revision `2af86848be75847ccb3553b0941cc51d6ef7e4e9`, whose model card declares Apache-2.0. The license text is retained in [examples/UPSTREAM-APACHE-2.0.txt](examples/UPSTREAM-APACHE-2.0.txt). Original state and candidate labels are retained; schemas are translated to this project's contracts, some variants select subsets, and development expectations/incident propositions are added. The customer-inbox fixture is original synthetic data. Each adapted fixture records its source URL and hash. No upstream engine code or weights are incorporated.
+
+## Demo typography
+
+The demo video and poster use IBM Plex Sans, licensed under the SIL Open Font License. The license is retained in [docs/assets/Plex-OFL.txt](docs/assets/Plex-OFL.txt).

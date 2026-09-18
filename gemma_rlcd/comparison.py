@@ -100,11 +100,10 @@ def output_budget(tokenizer, questions: dict) -> int:
     return min(2048, max(128, 2 * size + 32))
 
 
-def generate_answers(backend, state: State, questions: dict) -> dict:
-    from mlx_vlm import generate
+def prepare_generation(backend, state: State, questions: dict) -> tuple[str, dict]:
+    """Use the same complete prompt and media preparation for both inference paths."""
     from mlx_vlm.utils import prepare_inputs
 
-    started = time.perf_counter()
     task = generation_task(questions)
     with audio_paths(state) as audios:
         content = [{"type": "image"} for _ in state.images]
@@ -138,6 +137,14 @@ def generate_answers(backend, state: State, questions: dict) -> dict:
     inputs.pop("attention_mask", None)
     if inputs["input_ids"].shape[-1] > backend.max_input_tokens:
         raise ValueError("Normal Gemma input exceeds the token limit; no truncation applied")
+    return prompt, inputs
+
+
+def generate_answers(backend, state: State, questions: dict) -> dict:
+    from mlx_vlm import generate
+
+    started = time.perf_counter()
+    prompt, inputs = prepare_generation(backend, state, questions)
     budget = output_budget(backend.tokenizer, questions)
     prepared = time.perf_counter()
     generated = generate(

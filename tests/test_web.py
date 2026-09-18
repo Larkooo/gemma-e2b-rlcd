@@ -5,14 +5,16 @@ import subprocess
 import time
 import wave
 from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 from threading import Event
 
 import pytest
 from fastapi.testclient import TestClient
 from PIL import Image
 
-from gemma_decisions.core import TokenScores
-from gemma_decisions.web import create_app, read_spec
+from gemma_rlcd.comparison import generation_task
+from gemma_rlcd.core import TokenScores, parse_question
+from gemma_rlcd.web import create_app, read_spec
 
 
 class FakeBackend:
@@ -59,6 +61,47 @@ def request_spec():
             }
         },
     }
+
+
+def test_large_demo_presets_are_served_and_all_decisions_reach_backend(playground):
+    client, backend, _ = playground
+    response = client.get("/static/demo-presets.json")
+    assert response.status_code == 200
+    presets = response.json()
+    for name, count in [
+        ("support_matrix", 28),
+        ("inbox_matrix", 32),
+        ("ticket_flags", 32),
+        ("catalog_choices", 4),
+    ]:
+        spec = presets[name]
+        response = client.post("/api/run", data={"spec": json.dumps(spec)})
+        assert response.status_code == 200
+        assert len(backend.calls[-1][1]) == count
+        assert backend.calls[-1][0].text == spec["text"]
+        assert set(response.json()["answers"]) == set(spec["questions"])
+
+
+def test_demo_presets_preserve_the_benchmark_prompt_after_editor_serialization(playground):
+    client, _, _ = playground
+    presets = client.get("/static/demo-presets.json").json()
+    cases = json.loads((Path(__file__).parents[1] / "examples/demo-workloads.json").read_text())
+    cases = {case["name"]: case for case in cases["cases"]}
+    for preset_name, case_name in [
+        ("support_matrix", "support_28"),
+        ("inbox_matrix", "inbox_32"),
+        ("ticket_flags", "ticket_flags_32"),
+        ("catalog_choices", "catalog_64"),
+    ]:
+        preset = presets[preset_name]
+        # The editor materializes default yes/no meanings into an explicit map.
+        assert all("criteria" in question for question in preset["questions"].values())
+        _, actual = read_spec(json.dumps(preset))
+        expected = {
+            name: parse_question(raw) for name, raw in cases[case_name]["questions"].items()
+        }
+        assert preset["text"] == cases[case_name]["text"]
+        assert generation_task(actual) == generation_task(expected)
 
 
 def test_web_text_and_shared_instructions_reach_one_model_call(playground):
@@ -230,7 +273,7 @@ def test_independent_expansion_is_bounded():
 
 def test_static_application_is_served(playground):
     client, _, _ = playground
-    assert "Decision Lab" in client.get("/").text
+    assert "Gemma E2B RLCD" in client.get("/").text
     response = client.get("/static/app.js")
     assert response.status_code == 200
     assert response.headers["x-content-type-options"] == "nosniff"
@@ -332,7 +375,7 @@ def test_concurrent_requests_do_not_overlap_on_model(playground):
 def test_comparison_runs_each_path_once_on_same_uploaded_input(playground, monkeypatch):
     from pathlib import Path
 
-    from gemma_decisions import comparison
+    from gemma_rlcd import comparison
 
     client, backend, directory = playground
     normal_calls = []
@@ -377,7 +420,7 @@ def test_comparison_runs_each_path_once_on_same_uploaded_input(playground, monke
 
 
 def test_invalid_generated_answer_remains_visible_without_speedup_claim(playground, monkeypatch):
-    from gemma_decisions import comparison
+    from gemma_rlcd import comparison
 
     client, _, _ = playground
     monkeypatch.setattr(

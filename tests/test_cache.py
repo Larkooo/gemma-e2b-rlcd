@@ -2,8 +2,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from gemma_decisions.cached_backend import CachedMLXBackend, PreparedState
-from gemma_decisions.core import ScoringRequest
+from gemma_rlcd.cached_backend import CachedMLXBackend, PreparedState
+from gemma_rlcd.core import ScoringRequest
 
 mx = pytest.importorskip("mlx.core")
 cache_module = pytest.importorskip("mlx_vlm.models.cache")
@@ -71,7 +71,7 @@ def test_batched_trim_selects_each_real_answer_before_padding():
 
 
 def test_gathered_causal_mask_preserves_each_answer_position():
-    from gemma_decisions.answer_positions import select_answer_mask
+    from gemma_rlcd.answer_positions import select_answer_mask
 
     mask = select_answer_mask("causal", mx.array([3, 1]), 4, 10)
     assert mask.shape == (2, 1, 1, 10)
@@ -80,7 +80,7 @@ def test_gathered_causal_mask_preserves_each_answer_position():
 
 @pytest.mark.parametrize("batched", [False, True])
 def test_gathered_window_mask_preserves_existing_mask(batched):
-    from gemma_decisions.answer_positions import select_answer_mask
+    from gemma_rlcd.answer_positions import select_answer_mask
 
     mask = (mx.arange(10)[None, :] <= mx.arange(6, 10)[:, None]) & (
         mx.arange(10)[None, :] >= mx.arange(4, 8)[:, None]

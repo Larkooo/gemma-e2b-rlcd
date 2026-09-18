@@ -7,9 +7,9 @@ import time
 from dataclasses import replace
 from pathlib import Path
 
-from gemma_decisions import Choice, DecisionEngine, Noul, Score, State
-from gemma_decisions.cached_backend import CachedMLXBackend
-from gemma_decisions.core import ScoringRequest, decision_prompt, softmax
+from gemma_rlcd import Choice, DecisionEngine, Noul, Score, State
+from gemma_rlcd.cached_backend import CachedMLXBackend
+from gemma_rlcd.core import ScoringRequest, decision_prompt, softmax
 
 
 def compare(left, right):

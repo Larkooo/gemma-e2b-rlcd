@@ -1,0 +1,30 @@
+{
+  "scope": "Browser integration checks after installing the workload examples. Timings are individual observations, not pooled with the repeated benchmark.",
+  "presets_checked": {
+    "support_matrix": 28,
+    "inbox_matrix": 32,
+    "ticket_flags": 32,
+    "catalog_choices": 4
+  },
+  "initial_check": {
+    "complete": true,
+    "comparison_rows": 28,
+    "different_fields": [
+      "public_status_page_incident",
+      "assigned_agent_tier"
+    ],
+    "parallel_seconds": 2.456,
+    "normal_seconds": 12.004,
+    "issue": "Browser editor materialized different default yes/no meanings than the benchmark."
+  },
+  "fix": "Presets now include the core default yes/no meanings explicitly. A regression test verifies the complete generated task matches each benchmark case after editor-style serialization.",
+  "final_check": {
+    "complete": true,
+    "comparison_rows": 28,
+    "different_fields": [],
+    "parallel_seconds": 3.407,
+    "normal_seconds": 8.573,
+    "console_errors": []
+  },
+  "tests": "89 passed; lint and JavaScript syntax checks passed."
+}

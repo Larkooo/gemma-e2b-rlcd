@@ -2,8 +2,8 @@ import math
 
 import pytest
 
-from gemma_decisions.calibration import brier_loss, evaluate, fit_temperature, log_loss
-from gemma_decisions.core import softmax
+from gemma_rlcd.calibration import brier_loss, evaluate, fit_temperature, log_loss
+from gemma_rlcd.core import softmax
 
 
 def test_proper_scores_reward_truthful_probabilities_in_expectation():

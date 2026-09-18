@@ -1,31 +1,70 @@
-# Architecture and output contracts
+# Parallel decision inference
 
+The default `JSONMLXBackend` scores defined answers using Gemma's native JSON format. It shares prompt construction and media preprocessing with the normal-generation path used by the playground comparison.
 
-The common prefix contains generic instructions and the complete multimodal state. Each question and its criteria follow that prefix. This order is essential: a question-dependent prefix cannot be reused for different questions.
+## Shared state
 
-`CachedMLXBackend` processes media and computes the shared state KV cache once per `system_one` request. It then forks independent cache objects and evaluates question suffixes in a tensor batch on the GPU. This is model batching, not a Python loop presented as concurrency. Unequal suffix lengths use right padding and each row gathers its own final real-token position. Each branch can attend to the shared state and its own suffix, never another field's suffix. The shared cache is not mutated.
+One prefix contains the complete text/media input, all questions and criteria, and the assistant generation header. Gemma computes this prefix once per request. Each field then branches at its own JSON key, such as `{"priority": `, and attends to the shared prefix and its own suffix.
 
-Version 0.4 gathers each row's actual answer position before the final 20 KV-sharing layers. They process one position per field, preserving its original attention mask, position, and per-layer inputs. The first 15 layers still process every question token and supply complete KV to the later layers. All 35 layers run. Version 0.3 retained the entire tail spanning unequal answer positions; it remains available as `answer_mode="tail"` for comparisons. Vision position embeddings now use indexed table reads instead of a dense one-hot matrix multiplication. Neither change reduces model depth, media settings, or instruction content.
+The prefix cache remains unchanged while branches run. KV computation is reused; the MLX implementation replicates KV storage across batch rows. Caches are scoped to a request. The branch batch size defaults to eight and is configurable from 1 to 64; additional batches run sequentially.
 
-Each question's options receive distinct, tokenizer-verified single-token codes. All option logits are read from the same output vector, so a 255-option Choice does not require 255 model passes. Multiple Noul fields become separate batched rows. Score computes the expectation over level indices. The three primitives share the same backbone and execution path.
+Every field sees the full schema. Fields do not see one another's answers, so tasks with answer dependencies need an explicit sequence of requests.
 
-The default branch batch size is 8 (configurable from 1 to 64). More fields are processed in bounded batches against the same prefix. Within a batch they are evaluated together; different batches run sequentially. Memory and compute still grow with branch count, suffix length, and media context. State encoding and prefill reuse can provide substantial savings for larger shared inputs; tiny inputs can be slower because of batching overhead.
+## Candidate likelihoods
 
-KV **computation** is reused. The current MLX implementation replicates prefix KV **storage** across batch rows. It is not zero-copy paged attention, and it is not a reconstruction of Jev's architecture. Caches are scoped to one request; no stale prefix is reused across changed states or model versions.
+For a field with allowed values `c₁ … cₖ`, the scorer computes the conditional log likelihood of each complete JSON value:
 
-The cached backend preserves packed 4-bit weights and promotes floating parameters/activations to float32. The original bfloat16 compute path showed unacceptable probability drift when execution shapes changed. Float32 reduced this substantially, but cached and uncached scores are still not bit-identical. See [CACHE-RESULTS.md](experiments/cache.md) for measured differences and timings. Any training/calibration must target the actual serving precision and batch path.
+```text
+s(c) = Σₜ log P(cₜ | shared input, field prefix, c₍<ₜ₎)
+p(c) = exp(s(c) / T) / Σⱼ exp(s(cⱼ) / T)
+```
 
-`allowed_token_mass` reports how much probability the original full vocabulary assigned to allowed codes before normalization. A very small value is evidence of a mismatch with the requested answer format. Even a high value does not establish correctness. Code order and wording can change the answer; permutation robustness must be evaluated before deployment.
+A common candidate-token prefix can be factored into the field prefix without changing the normalized distribution. The default temperature `T` is 1.
 
-The default temperature is 1. `calibration.py` provides proper log/Brier scores, reliability bins, and temperature fitting on a dedicated calibration split. Passing a temperature never changes `calibration_status` to validated. Calibration needs independent evaluation, including per-modality and shifted-data checks.
+For single-token candidates, all candidate scores come from one vocabulary output vector per field. For multi-token candidates, known token sequences are teacher-forced in bounded batches. The causal model scores every remaining token, including string terminators; it does not iteratively sample the next answer token. This preserves distinctions between labels sharing initial tokens or entire word prefixes. Whitespace at the value boundary is retained during tokenization.
 
-## Current input limits
+Work grows with the number and length of candidates. A field with 64 long labels can cost more than several binary fields.
 
-- Text and one or more local images.
-- One speech/audio clip up to 30 seconds.
-- One video up to 60 seconds, sampled at a target 1 frame per second. The verified checkpoint's processor caps the resulting clip at 32 frames and may adjust sampling for short clips. This is frame-based video understanding, not continuous high-frame-rate perception.
-- A video's soundtrack is extracted and included automatically. Video with a soundtrack is limited to 30 seconds because of the audio limit. A second separate audio stream is rejected, not silently discarded.
-- An 8,192-token prototype limit is enforced after preprocessing; excessive inputs fail instead of truncating silently. This is a local operational limit, not the model's maximum context length.
-- Descriptions and instructions currently use strings. Jev's additional object/array descriptions, SDK compatibility, and structured-output combinators are not implemented.
+## Output contracts
 
-These limits are explicit so a successful request actually processes the supplied media. Sampling can miss short visual events; native audio input does not by itself prove dependable general sound-event recognition.
+| Contract | Scoring | Returned value |
+| --- | --- | --- |
+| `Choice` | Normalize allowed category scores together | Winning category and full distribution |
+| `Independent` | Expand each label into its own boolean field | One yes probability per label |
+| `Noul` | Score JSON `true` and `false` | Probability of the true proposition |
+| `Score` | Normalize scores over ordered level indices | Distribution and probability-weighted level |
+
+Nested independent fields retain their parent and child JSON keys. JSON is assembled in code after scoring, so returned values follow the requested schema.
+
+`confidence` is one minus normalized entropy: a measure of how concentrated the distribution is. `allowed_token_mass` measures probability assigned to allowed tokens, or summed complete candidate-sequence probabilities for multi-token fields. Neither is an empirical accuracy estimate. The response records the probability source and calibration status; temperature fitting is available in `calibration.py`.
+
+## Backbone and precision
+
+Inference uses all 35 Gemma layers with packed 4-bit weights and float32 floating parameters/activations. The native vision and audio towers, video timestamps, soundtrack extraction, and processor sampling settings are retained.
+
+Single-token branches gather each row's actual answer position before the final 20 KV-sharing layers. Those layers process the answer position using its original mask, position, and per-layer inputs. The first 15 layers still process every suffix token and provide the complete KV state. Unequal suffix lengths use right padding and row-specific answer positions. Vision position embeddings use indexed table reads.
+
+Float32 reduced the probability drift observed when changing execution shapes under bfloat16. Numerical measurements are preserved in the [cache comparison](experiments/cache.md) and [full-depth execution report](experiments/full-detail.md). [Native JSON regression checks](experiments/native-json.md) cover text, images, speech, video, and soundtracks.
+
+## Media and limits
+
+- Text and local images; the web interface accepts up to eight images.
+- One audio clip up to 30 seconds.
+- One silent video up to 60 seconds, sampled at a target of 1 fps with a 32-frame processor cap.
+- A video's soundtrack is included automatically. Videos with audio have a 30-second limit; a second audio source returns an error.
+- Up to 8,192 processed input tokens by default. Inputs exceeding the limit are rejected without truncation.
+- Up to 32 named fields and 64 primitive decisions in the playground.
+- Questions and descriptions are strings; the Python contracts use name-to-description mappings.
+
+Video sampling can miss brief events. The limits describe the current serving configuration rather than the checkpoint's maximum context capacity.
+
+## Additional backends
+
+| CLI option | Implementation | Purpose |
+| --- | --- | --- |
+| `--backend json` | `JSONMLXBackend` | Default native JSON candidate scoring |
+| `--backend cached` | `CachedMLXBackend` | Earlier single-token answer-code scoring |
+| `--backend catalog` | `CatalogMLXBackend` | Shared-question catalog experiment |
+| `--backend head` | `DecisionHeadBackend` | Candidate-conditioned head; requires a checkpoint |
+
+The cached path assigns tokenizer-verified codes to options and scores per-question suffixes against shared state. Historical answer-code and catalog measurements are retained for reproducing those experiments. The [training guide](training.md) describes the head separately.

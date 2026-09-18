@@ -1,7 +1,4 @@
-"""Proper scoring rules and a calibration-set-only temperature baseline.
-
-These are supervised objectives, not a reproduction of TypeSafe's RLCD algorithm.
-"""
+"""Probability evaluation and temperature fitting on a calibration split."""
 
 import math
 from collections.abc import Sequence

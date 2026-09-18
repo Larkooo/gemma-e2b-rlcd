@@ -1,18 +1,18 @@
 # Contributing
 
-Use Python 3.12+ and an Apple Silicon Mac for MLX tests and inference. Follow the README setup, then run:
+Follow the README setup, then run:
 
 ```bash
 python -m pytest -q
-ruff check gemma_decisions tests scripts
-ruff format --check gemma_decisions tests scripts
-node --check gemma_decisions/static/app.js
+ruff check gemma_rlcd tests scripts
+ruff format --check gemma_rlcd tests scripts
+node --check gemma_rlcd/static/app.js
 ```
 
-Keep changes focused. Add tests for changed behavior, preserve the probability semantics of each output type, and keep the normal-generation comparison honest about failures and timing boundaries.
+CI runs portable contract and web tests on Linux without model weights. MLX tests and inference require Apple Silicon and run locally.
 
-The GitHub workflow checks the portable contracts and web backend without downloading model weights. MLX-only tests skip on Linux. Passing that workflow does not establish model quality, calibration, GPU performance, or multimodal accuracy.
+Keep changes focused. Add tests for changed behavior, preserve each output type's probability semantics, and include answer quality alongside performance measurements. Use the same input, model, and media settings for comparison paths; retain invalid responses in reports.
 
-For model changes, retain the frozen scorer as a reference. Report held-out quality, failures, latency, and preprocessing settings separately. Supervised negative log likelihood is not an RL implementation; do not label a model calibrated without independent evidence. See [the training plan](docs/training.md).
+Training changes should report held-out accuracy, log loss, Brier score, and reliability alongside latency. Fit temperatures on a separate calibration split. See [training and calibration](docs/training.md) for the data format and objectives.
 
-Do not commit uploaded media, credentials, model weights, local machine paths, or runtime logs. Generated fixtures and new experimental outputs belong in the ignored `work/` directory. Published experiment reports should identify their data, model revision, settings, and limitations.
+Keep uploads, credentials, model weights, machine paths, and runtime logs out of commits. Use the ignored `work/` directory for generated fixtures and new runs. Published reports should identify their data, model revision, settings, and measurement boundaries.

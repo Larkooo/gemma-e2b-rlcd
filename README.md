@@ -1,12 +1,16 @@
 # Gemma E2B RLCD
 
-Multimodal typed decisions with Gemma 4 E2B on Apple Silicon: give it text, an image, speech, or video, ask a question, and get choices, grades, or independent-label probabilities.
+Parallel classification, grading, and label probabilities over **text, images, speech, and video**, powered by Gemma 4 E2B on Apple Silicon.
 
-**Current status:** a working frozen-model scorer, a local web playground, and experimental supervised decision-head training. Reinforcement Learning for Calibrated Decisions (RLCD) is the research direction; an RL training loop is **not implemented**, and probabilities are **not calibrated**. This is an independent project inspired by [TypeSafe's Jev and RLCD description](https://typesafe.ai/blog/introducing-system-one-models-and-jev), not a reproduction of its architecture or training method.
+Give the model one input and a set of questions. It encodes the input once, scores the allowed answers in GPU batches, and returns structured results with probability distributions.
 
-## Try it
+[![28 decisions from one support ticket](docs/assets/demo-poster.jpg)](docs/assets/demo.mp4)
 
-Requires an Apple Silicon Mac, Python 3.12+, [uv](https://docs.astral.sh/uv/getting-started/installation/), and ffmpeg/ffprobe for audio or video. Local development was tested on an Apple M5 with 32 GB unified memory. Model inference uses MLX; this release does not provide a CUDA backend.
+**[Watch the demo](docs/assets/demo.mp4)** · 28 matching outputs · 4.41 s vs 15.66 s · 3.55× faster on the support-triage workload.
+
+## Quick start
+
+Requires an Apple Silicon Mac, Python 3.12+, [uv](https://docs.astral.sh/uv/getting-started/installation/), and ffmpeg for audio/video.
 
 ```bash
 git clone https://github.com/Larkooo/gemma-e2b-rlcd.git
@@ -20,40 +24,57 @@ hf download mlx-community/gemma-4-e2b-it-4bit \
   --revision 238767527555cb75a05732a84dff5d6ba0dd6809 \
   --local-dir models/gemma-4-e2b-it-4bit
 
-gemma-decide-web --model models/gemma-4-e2b-it-4bit --port 8787
+gemma-rlcd-web --model models/gemma-4-e2b-it-4bit --port 8787
 ```
 
-Open **http://127.0.0.1:8787**. Weights are downloaded separately from [MLX Community](https://huggingface.co/mlx-community/gemma-4-e2b-it-4bit); use the full multimodal checkpoint, including its audio encoder. An existing local copy can be passed to `--model` instead.
+Open **http://127.0.0.1:8787**. Add text, upload media, or record speech. Enter a question and its choices—**“Which brand is this?”** with **Porsche**, **Mercedes**, and **Other** is enough. Descriptions are optional.
 
-1. Add text, media, or a speech recording.
-2. Enter a question, such as **“Which brand is this?”**
-3. Add choices such as **Porsche**, **Mercedes**, and **Other**. Descriptions are optional. For grading, choose a numeric scale; level descriptions are also optional in the UI.
-4. Click **Run all fields**, or **Compare with Gemma** to see both answers and elapsed times.
+Choose **Run all fields** for answers and distributions, or **Compare with Gemma** for a side-by-side comparison with ordinary JSON generation. Built-in examples cover support triage, customer inboxes, incident facts, and catalog routing. Uploads stay local and are deleted after each request.
 
-The comparison runs the parallel scorer once, then ordinary autoregressive Gemma once, on the same resident model and media settings. Normal Gemma generates one compact JSON object for all fields. The UI shows disagreements, malformed answers, generated token counts, and the speed ratio when the generated answer is valid. The Answers tab retains the scorer's full distributions.
+Use the full [multimodal checkpoint](https://huggingface.co/mlx-community/gemma-4-e2b-it-4bit), including its audio encoder. Pass an existing local checkpoint to `--model` to skip the download.
 
-Timings include input preparation and inference, exclude model loading and upload transfer, and add shared upload decoding equally to each path. These are single observations, without additional warm-up or benchmark runs. Order and first-use effects can influence timing. Agreement is not evidence of accuracy.
+## How it works
 
-Uploads stay local and are deleted after the request. Text and field definitions are saved in browser local storage; attachments are not retained. Multi-picture phone JPEGs use the full-resolution primary photograph.
+```mermaid
+flowchart LR
+    A[Text / image / speech / video] --> B[Shared multimodal prefill]
+    Q[Questions and allowed answers] --> B
+    B --> C[Reusable KV state]
+    C --> D[Batched field and candidate scoring]
+    D --> E[Probabilities and structured results]
+```
 
-## Output contracts
+1. **Encode once.** Gemma processes the complete input, questions, and candidate descriptions in one shared prefix.
+2. **Branch by field.** Each field starts from that prefix with its own short JSON key. Branches run in bounded GPU batches.
+3. **Score complete answers.** Single-token choices share one output vector. Multi-token choices are evaluated as complete JSON values with teacher forcing, including closing quotes.
+4. **Return the result.** Candidate log likelihoods become probabilities within each field. Code selects labels, calculates grades, and assembles the final JSON.
 
-| Type | Use | Result |
+The output values are known in advance, so inference can score them without an autoregressive answer-generation loop. All 35 Gemma layers and the native image/audio processing remain in use. Video includes sampled frames, timestamps, and its soundtrack.
+
+The default batch size is eight. More fields use additional batches; prefix computation is reused, while KV storage is replicated per batch row. Fields share the complete input and schema, but do not condition on one another's generated answers. See [architecture](docs/architecture.md) for the scoring equations, precision settings, and execution details.
+
+### RLCD and probability learning
+
+**RLCD** stands for **Reinforcement Learning for Calibrated Decisions**: learning decision probabilities from outcome feedback. A calibrated 80% prediction should succeed about 80% of the time across comparable cases.
+
+Here, the default inference path obtains candidate probabilities directly from pretrained Gemma. The repository also includes a candidate-conditioned decision head, supervised likelihood training, Brier/log-loss evaluation, and temperature fitting. [Training and calibration](docs/training.md) explains these components and the outcome-feedback objective separately from inference.
+
+## Output types
+
+| Type | Question | Result |
 | --- | --- | --- |
-| `Choice` | Select one category | Winner and probabilities summing to 1 |
-| `Independent` | Check each label separately | A yes probability per label; multiple labels can be true |
-| `Score` | Grade on ordered levels | Level probabilities and their probability-weighted mean |
-| `Noul` | Evaluate a yes/no proposition | Probability that the proposition is true |
+| `Choice` | Which brand is this? | One choice and a distribution summing to 1 |
+| `Independent` | Which animals are present? | A separate yes probability for each label |
+| `Score` | How well does this meet the rubric? | Level probabilities and an expected grade |
+| `Noul` | Does this need escalation? | A yes/no probability |
 
-For example, `{cat: 0.9, dog: 0.5}` makes sense for independent animal-presence labels. A single exclusive cat-versus-dog choice must sum to 1. Grades use zero-based level indices, not a probability of correctness. The `confidence` statistic is one minus normalized entropy; it measures distribution concentration.
-
-The web UI accepts names alone. The Python API makes meanings explicit with a name-to-description mapping; use the name itself when no additional description is needed:
+For independent labels, `{cat: 0.9, dog: 0.5}` is valid: both can be present. A mutually exclusive cat-or-dog choice sums to 1. Scores use zero-based grade levels; `confidence` measures distribution concentration via normalized entropy. Probability quality can be evaluated with the [calibration utilities](gemma_rlcd/calibration.py).
 
 ```python
-from gemma_decisions import Choice, DecisionEngine, Independent, State
-from gemma_decisions.cached_backend import CachedMLXBackend
+from gemma_rlcd import Choice, DecisionEngine, Independent, State
+from gemma_rlcd.json_backend import JSONMLXBackend
 
-engine = DecisionEngine(CachedMLXBackend("models/gemma-4-e2b-it-4bit"))
+engine = DecisionEngine(JSONMLXBackend("models/gemma-4-e2b-it-4bit"))
 result = engine.system_one(
     State(text="A cat sleeps on the sofa. No dogs are present."),
     {
@@ -67,75 +88,42 @@ result = engine.system_one(
 print(result["answers"])
 ```
 
-`State` also accepts `images`, `audio`, and `videos` as tuples of local paths. To run a JSON request from the command line:
+`State` also accepts `images`, `audio`, and `videos` as tuples of local paths. Run a JSON request from the command line with:
 
 ```bash
-gemma-decide examples/text.json --model models/gemma-4-e2b-it-4bit
+gemma-rlcd examples/text.json --model models/gemma-4-e2b-it-4bit
 ```
 
-## How parallel scoring works
+## Performance
 
-```mermaid
-flowchart LR
-    A[Text / image / speech / video] --> B[Shared multimodal prefill]
-    B --> C[Shared state KV]
-    Q[Questions + choices] --> D[Batched independent field branches]
-    C --> D
-    D --> E[Candidate logits]
-    E --> F[Choice / grade / label probabilities]
-```
+Local Apple M5 measurements: the same 4-bit model, four measured runs after warmup, fresh KV state per request. Times include input preparation and inference; model loading and upload are excluded.
 
-The default path keeps all 35 Gemma layers. It computes the common state once, then evaluates field suffixes in GPU batches, reading candidate logits directly. It does not generate answer text or JSON token by token. The final 20 KV-sharing layers compute only the requested answer position; earlier layers still process every question token. Image position lookup also avoids a dense one-hot multiplication.
+| Workload | Parallel | Normal Gemma | Speed ratio | Annotated answers, parallel / normal |
+| --- | ---: | ---: | ---: | --- |
+| Support triage · 28 fields | 4.41 s | 15.66 s | **3.55×** | 15/17 · 15/17 |
+| Customer inbox · 32 decisions | 5.24 s | 13.97 s | **2.67×** | 31/32 · 32/32 |
+| Incident facts · 32 labels | 0.86 s | 5.95 s | **6.88×** | 31/32 · 32/32 |
+| Catalog routing · 64 choices | 3.27 s | 2.46 s | **0.75×** | 1/1 · 1/1 |
 
-All candidates in a Choice are read from one output vector, not separate full-model passes. Independent labels expand into binary fields. Batches default to eight fields; larger requests use successive batches. KV computation is shared, while KV storage is currently replicated across batch rows. Two fields do not guarantee a 2× end-to-end speedup. See [architecture and precision details](docs/architecture.md).
+A ratio above 1 favors parallel scoring. The support example matches all 28 outputs; 17 have annotated expectations. Many short decisions benefit most, while long candidate sets add scoring work. The [full comparison](docs/experiments/demo-workloads.md) includes all workloads, timing ranges, answer differences, and a serial scoring control. The demo replays these measured support-case medians.
 
-## Input limits
+## Media and request limits
 
-- Web uploads: up to eight images, one audio clip, and one video; 200 MB combined.
-- Audio: up to 30 seconds. A video's soundtrack is included automatically; a second audio source is rejected.
-- Silent video: up to 60 seconds; video with audio: up to 30 seconds.
-- Video sampling: target 1 frame/second, capped at 32 frames by the verified processor. Brief visual events can be missed.
-- Input limit: 8,192 processed tokens. Oversized requests fail instead of silently truncating.
-- Web outputs: up to 32 named fields and 64 primitive decisions after independent-label expansion.
+The playground accepts up to eight images, one audio source, and one video, with 200 MB of uploads per request. Audio and videos with sound support up to 30 seconds; silent video supports up to 60 seconds. Video targets one frame per second, capped at 32 frames, so brief events can fall between samples.
 
-The original model's perception settings remain in use. This does not imply lossless processing of every image pixel or video frame.
-
-## Research and results
-
-The default frozen scorer remains the reference. Two supervised decision-head pilots performed worse and are not recommended for inference:
-
-| Text pilot | Correct decisions on the small test set |
-| --- | ---: |
-| Frozen Gemma scorer | 64/64 |
-| Four-layer state encoder + trained head | 21/64 |
-| Full 35-layer state encoder + trained head | 23/64 |
-
-These are narrow synthetic experiments, not general quality benchmarks. No trained multimodal accuracy improvement, calibration result, or RL advantage has been established. The rejected pilot metadata and reports are retained; weights are not distributed.
-
-- [Training implementation, failed pilots, and RLCD research plan](docs/training.md)
-- [Full-detail execution results](docs/experiments/full-detail.md)
-- [Two-field video comparison](docs/experiments/two-fields.md)
-- [Raw reports and provenance](reports/README.md)
+Requests support up to 32 named fields, 64 primitive decisions, and 8,192 processed input tokens. Oversized inputs return an error rather than being truncated. Multi-picture phone JPEGs use the full-resolution primary photograph. Text and field definitions are saved in browser local storage; uploaded media is not retained.
 
 ## Development
 
 ```bash
 python -m pytest -q
-ruff check gemma_decisions tests scripts
-ruff format --check gemma_decisions tests scripts
-node --check gemma_decisions/static/app.js
+ruff check gemma_rlcd tests scripts
+ruff format --check gemma_rlcd tests scripts
+node --check gemma_rlcd/static/app.js
 ```
 
-The GitHub workflow runs portable contract and web tests on Linux without model weights; MLX-only tests skip there. GPU tests and inference require Apple Silicon. [Contributing](CONTRIBUTING.md) explains the validation boundaries. The pinned MLX-VLM version matters because the optimized path uses its Gemma internals. [requirements-tested.txt](requirements-tested.txt) records the local development environment.
-
-For synthetic multimodal integration fixtures on macOS:
-
-```bash
-python scripts/create_fixtures.py --output-dir work/media
-python scripts/smoke.py --model models/gemma-4-e2b-it-4bit \
-  --media work/media --report work/smoke.json
-```
+See [contributing](CONTRIBUTING.md), [training](docs/training.md), and [experiment reports](reports/README.md). The [tested dependencies](requirements-tested.txt) and [model revision](model-source.json) make the local setup reproducible. CI runs portable tests on Linux; MLX inference and GPU tests run on Apple Silicon.
 
 ## License
 
-Project code and synthetic examples are available under [MIT](LICENSE). Model weights are not included and retain their upstream terms. See [third-party notices](THIRD_PARTY_NOTICES.md), the [Google model card](https://huggingface.co/google/gemma-4-E2B-it), and the [MLX conversion](https://huggingface.co/mlx-community/gemma-4-e2b-it-4bit).
+Code and original synthetic examples: [MIT](LICENSE). Model weights retain their [upstream terms](https://huggingface.co/google/gemma-4-E2B-it). Third-party code and adapted examples are documented in [notices](THIRD_PARTY_NOTICES.md).

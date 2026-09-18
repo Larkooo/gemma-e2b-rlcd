@@ -5,9 +5,9 @@ import json
 import statistics
 from pathlib import Path
 
-from gemma_decisions import State
-from gemma_decisions.core import ScoringRequest, decision_prompt
-from gemma_decisions.head_backend import DecisionHeadBackend
+from gemma_rlcd import State
+from gemma_rlcd.core import ScoringRequest, decision_prompt
+from gemma_rlcd.head_backend import DecisionHeadBackend
 
 
 def requests_for(backend, count):

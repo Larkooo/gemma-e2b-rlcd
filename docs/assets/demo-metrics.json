@@ -1,0 +1,107 @@
+{
+  "case": "support_28",
+  "seconds": {
+    "batched": 4.414529457993922,
+    "normal": 15.659702042015851
+  },
+  "speedup": 3.547309445100414,
+  "outputs": {
+    "sentiment": "VERY_NEGATIVE",
+    "severity_tier": "SEV_0_CRITICAL",
+    "primary_department": "INFRASTRUCTURE_SRE",
+    "secondary_department": "CORE_API",
+    "sla_breach_risk": true,
+    "requires_executive_escalation": true,
+    "can_resolve_autonomously": false,
+    "confidence_above_auto_threshold": false,
+    "churn_risk_level": "CRITICAL_IMMINENT",
+    "refund_recommended": true,
+    "refund_tier": "FULL_MONTH_CREDIT",
+    "requires_legal_review": true,
+    "security_incident": false,
+    "compliance_breach": true,
+    "customer_tenure_tier": "ENTERPRISE_STRATEGIC",
+    "root_cause_domain": "API_GATEWAY",
+    "target_resolution_hours": "1_HOUR",
+    "requires_phone_call": true,
+    "notify_account_executive": true,
+    "public_status_page_incident": true,
+    "postmortem_required": true,
+    "vendor_fault": true,
+    "contract_penalty_applicable": true,
+    "escalate_to_vp": true,
+    "customer_sentiment_trend": "WORSENING",
+    "suggested_action": "SCHEDULE_EXEC_CALL",
+    "assigned_agent_tier": "TIER_1",
+    "ticket_priority": "P0_EMERGENCY"
+  },
+  "matching_outputs": 28,
+  "checks": {
+    "batched": {
+      "correct": 15,
+      "scored": 17,
+      "checks": {
+        "sentiment": true,
+        "severity_tier": true,
+        "primary_department": true,
+        "sla_breach_risk": true,
+        "requires_executive_escalation": true,
+        "churn_risk_level": true,
+        "refund_recommended": true,
+        "requires_legal_review": true,
+        "security_incident": true,
+        "compliance_breach": false,
+        "customer_tenure_tier": true,
+        "root_cause_domain": true,
+        "requires_phone_call": true,
+        "escalate_to_vp": true,
+        "customer_sentiment_trend": true,
+        "suggested_action": false,
+        "ticket_priority": true
+      }
+    },
+    "normal": {
+      "correct": 15,
+      "scored": 17,
+      "checks": {
+        "sentiment": true,
+        "severity_tier": true,
+        "primary_department": true,
+        "sla_breach_risk": true,
+        "requires_executive_escalation": true,
+        "churn_risk_level": true,
+        "refund_recommended": true,
+        "requires_legal_review": true,
+        "security_incident": true,
+        "compliance_breach": false,
+        "customer_tenure_tier": true,
+        "root_cause_domain": true,
+        "requires_phone_call": true,
+        "escalate_to_vp": true,
+        "customer_sentiment_trend": true,
+        "suggested_action": false,
+        "ticket_priority": true
+      }
+    }
+  },
+  "source_report": "../../reports/demo-workload-benchmark.json",
+  "source_sha256": "3b7700fa65e6bf6a80198785346758cc714275f817efe53d77910247317dc4eb",
+  "fixture_source": {
+    "url": "https://huggingface.co/harshatheg/Qwen-2.5-1B-RLCD/blob/2af86848be75847ccb3553b0941cc51d6ef7e4e9/presets/support_triage.json",
+    "revision": "2af86848be75847ccb3553b0941cc51d6ef7e4e9",
+    "sha256": "dcad89d77955893b1db6488e467a5ebe50b9e0376b8835dfb58132edea636fcc",
+    "adaptation": "Original state, field descriptions and labels preserved. enum becomes Choice; boolean becomes Noul. No source-engine code is executed."
+  },
+  "methodology": {
+    "compute": "Same resident frozen 4-bit Gemma weights, float32 compute, all 35 layers.",
+    "timing": "One excluded warmup per method per case, then repeated runs in rotating/reversed order. GPU synchronized at boundaries. Medians include prompt preparation and inference; exclude model loading, upload, and allocator reset.",
+    "cache": "Fresh input/media KV per run. Every scorer run prefills all state and question definitions once. Serial control changes only branch batch size to one, retaining the same shared prefix.",
+    "normal": "Greedy compact JSON with decisions only, no reasoning or requested probabilities; same complete input and schema as the scorer. No padded output requirement.",
+    "quality": "Predeclared development expectations are scored where available. Invalid structured responses count as failed decisions. Unannotated policy questions are compared only for agreement. Agreement does not establish accuracy.",
+    "input_limit": 16384,
+    "input_limit_note": "The 255-choice example exceeds the default 8192-token UI limit. This standalone benchmark raises the limit without truncating the schema for either method.",
+    "repeats": 4,
+    "batch_size": 8
+  },
+  "presentation": "Designed replay of measured median completion times at real elapsed-time scale. Not a screen recording or token timing trace. Eight of 28 actual output values are displayed with human-readable labels; all values are retained here."
+}

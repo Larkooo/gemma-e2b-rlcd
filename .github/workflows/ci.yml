@@ -27,9 +27,9 @@ jobs:
           sudo apt-get install -y ffmpeg
       - name: Check Python and browser code
         run: |
-          ruff check gemma_decisions tests scripts
-          ruff format --check gemma_decisions tests scripts
-          node --check gemma_decisions/static/app.js
+          ruff check gemma_rlcd tests scripts
+          ruff format --check gemma_rlcd tests scripts
+          node --check gemma_rlcd/static/app.js
       - name: Run contract and web tests
         run: python -m pytest -q
         # MLX-only tests skip on Linux. Full model inference is a local check.

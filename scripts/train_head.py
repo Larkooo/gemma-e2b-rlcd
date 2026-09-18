@@ -10,11 +10,11 @@ import mlx.core as mx
 import mlx.nn as nn
 import mlx.optimizers as optim
 
-from gemma_decisions import DecisionEngine, Independent, Noul, State
-from gemma_decisions.calibration import evaluate
-from gemma_decisions.core import TokenScores, parse_question, softmax
-from gemma_decisions.decision_head import grouped_cross_entropy
-from gemma_decisions.head_backend import DecisionHeadBackend
+from gemma_rlcd import DecisionEngine, Independent, Noul, State
+from gemma_rlcd.calibration import evaluate
+from gemma_rlcd.core import TokenScores, parse_question, softmax
+from gemma_rlcd.decision_head import grouped_cross_entropy
+from gemma_rlcd.head_backend import DecisionHeadBackend
 
 
 def read_rows(path):
@@ -170,7 +170,7 @@ def main():
         "trace": trace,
     }
     if args.reference:
-        from gemma_decisions.cached_backend import CachedMLXBackend
+        from gemma_rlcd.cached_backend import CachedMLXBackend
 
         reference = CachedMLXBackend(args.model)
         rows, targets = [], []

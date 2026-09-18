@@ -247,9 +247,9 @@ class Runtime:
         def initialize():
             started = time.perf_counter()
             if self.factory is None:
-                from .cached_backend import CachedMLXBackend
+                from .json_backend import JSONMLXBackend
 
-                self.backend = CachedMLXBackend(self.model, branch_batch_size=8)
+                self.backend = JSONMLXBackend(self.model, branch_batch_size=8)
             else:
                 self.backend = self.factory()
             self.load_seconds = time.perf_counter() - started

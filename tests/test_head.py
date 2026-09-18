@@ -3,8 +3,8 @@ import pytest
 mx = pytest.importorskip("mlx.core")
 nn = pytest.importorskip("mlx.nn")
 
-head_module = pytest.importorskip("gemma_decisions.decision_head")
-backend_module = pytest.importorskip("gemma_decisions.head_backend")
+head_module = pytest.importorskip("gemma_rlcd.decision_head")
+backend_module = pytest.importorskip("gemma_rlcd.head_backend")
 HeadConfig = head_module.HeadConfig
 ParallelDecisionHead = head_module.ParallelDecisionHead
 grouped_cross_entropy = head_module.grouped_cross_entropy

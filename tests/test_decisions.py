@@ -3,8 +3,8 @@ from string import ascii_uppercase
 
 import pytest
 
-from gemma_decisions import Choice, DecisionEngine, Independent, Noul, Score, State
-from gemma_decisions.core import TokenScores, parse_question, softmax
+from gemma_rlcd import Choice, DecisionEngine, Independent, Noul, Score, State
+from gemma_rlcd.core import TokenScores, parse_question, softmax
 
 
 class StubBackend:
@@ -65,6 +65,32 @@ def test_all_primitives_share_state_in_one_request():
     assert set(answers) == {"category", "grade", "present"}
     assert answers["category"]["confidence"] == pytest.approx(0.0)
     assert answers["grade"]["score"] == pytest.approx(0.7)
+
+
+def test_native_backend_receives_complete_schema_and_preserves_answer_contracts():
+    state = State(text="Two cats. No dogs.")
+    questions = {
+        "animal": Choice("Which animal?", {"cat": "Cat", "dog": "Dog"}),
+        "count": Score("How many cats?", ["Zero", "One", "Two"]),
+        "dog": Noul("Any dogs?", {"false": "No dogs", "true": "Dogs present"}),
+        "presence": Independent("Which animals?", {"cat": "A cat", "dog": "A dog"}),
+    }
+
+    class Native(StubBackend):
+        def score_batch(self, *args):
+            raise AssertionError("Native backend must receive the original questions")
+
+        def score_questions(self, actual_state, actual_questions):
+            assert actual_state is state
+            assert actual_questions is questions
+            probabilities = [[0.9, 0.1], [0.1, 0.1, 0.8], [0.9, 0.1], [0.9, 0.1], [0.1, 0.9]]
+            return [TokenScores(tuple(map(math.log, values)), 1, 100) for values in probabilities]
+
+    answers = DecisionEngine(Native([])).system_one(state, questions)["answers"]
+    assert answers["animal"]["choice"] == "cat"
+    assert answers["count"]["score"] == pytest.approx(1.7)
+    assert answers["dog"]["noul"] == pytest.approx(0.1)
+    assert answers["presence"]["probabilities"] == pytest.approx({"cat": 0.9, "dog": 0.1})
 
 
 @pytest.mark.parametrize(

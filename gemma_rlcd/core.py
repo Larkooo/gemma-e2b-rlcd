@@ -255,8 +255,11 @@ class DecisionEngine:
                     )
                 )
                 jobs.append((question_id, child_id, child, criteria))
+        question_score = getattr(self.backend, "score_questions", None)
         batch_score = getattr(self.backend, "score_batch", None)
-        if batch_score is not None:
+        if question_score is not None:
+            scores = question_score(state, questions)
+        elif batch_score is not None:
             scores = batch_score(state, requests)
         else:
             scores = [

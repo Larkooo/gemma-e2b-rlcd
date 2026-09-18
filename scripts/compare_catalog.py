@@ -8,10 +8,10 @@ from pathlib import Path
 
 from benchmark_head import requests_for
 
-from gemma_decisions import State
-from gemma_decisions.cached_backend import CachedMLXBackend
-from gemma_decisions.catalog_backend import CatalogMLXBackend
-from gemma_decisions.core import softmax
+from gemma_rlcd import State
+from gemma_rlcd.cached_backend import CachedMLXBackend
+from gemma_rlcd.catalog_backend import CatalogMLXBackend
+from gemma_rlcd.core import softmax
 
 
 def main():

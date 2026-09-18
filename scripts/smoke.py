@@ -5,8 +5,9 @@ import json
 import time
 from pathlib import Path
 
-from gemma_decisions import Choice, DecisionEngine, Noul, Score, State
-from gemma_decisions.cached_backend import CachedMLXBackend
+from gemma_rlcd import Choice, DecisionEngine, Noul, Score, State
+from gemma_rlcd.cached_backend import CachedMLXBackend
+from gemma_rlcd.comparison import compare
 
 
 def main():
@@ -14,7 +15,8 @@ def main():
     parser.add_argument("--model", required=True)
     parser.add_argument("--media", required=True, type=Path)
     parser.add_argument("--report", required=True, type=Path)
-    parser.add_argument("--backend", choices=["cached", "catalog"], default="cached")
+    parser.add_argument("--backend", choices=["json", "cached", "catalog"], default="json")
+    parser.add_argument("--compare-normal", action="store_true")
     args = parser.parse_args()
     media = args.media.resolve()
     animals = {"cat": "A cat", "dog": "A dog", "other": "Neither cat nor dog"}
@@ -103,11 +105,15 @@ def main():
     ]
     started = time.perf_counter()
     if args.backend == "catalog":
-        from gemma_decisions.catalog_backend import CatalogMLXBackend
+        from gemma_rlcd.catalog_backend import CatalogMLXBackend
 
         backend = CatalogMLXBackend(args.model)
-    else:
+    elif args.backend == "cached":
         backend = CachedMLXBackend(args.model)
+    else:
+        from gemma_rlcd.json_backend import JSONMLXBackend
+
+        backend = JSONMLXBackend(args.model)
     loaded = time.perf_counter()
     engine = DecisionEngine(backend)
     report = {
@@ -123,8 +129,13 @@ def main():
     for name, state, questions, expected in jobs:
         start = time.perf_counter()
         batch_error = None
+        comparison = None
         try:
-            answers = engine.system_one(state, questions)["answers"]
+            if args.compare_normal:
+                result, comparison = compare(backend, state, questions, 0)
+                answers = result["answers"]
+            else:
+                answers = engine.system_one(state, questions)["answers"]
         except Exception as exc:
             batch_error = f"{type(exc).__name__}: {exc}"
             answers = {}
@@ -134,6 +145,7 @@ def main():
                 "seconds": time.perf_counter() - start,
                 "execution": dict(backend.last_stats),
                 "error": batch_error,
+                "comparison": comparison,
             }
         )
         for question_id, question in questions.items():

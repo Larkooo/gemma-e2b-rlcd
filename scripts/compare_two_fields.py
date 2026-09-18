@@ -8,9 +8,9 @@ from pathlib import Path
 
 from check_cache import compare
 
-from gemma_decisions import State
-from gemma_decisions.cached_backend import CachedMLXBackend
-from gemma_decisions.core import ScoringRequest, decision_prompt, softmax
+from gemma_rlcd import State
+from gemma_rlcd.cached_backend import CachedMLXBackend
+from gemma_rlcd.core import ScoringRequest, decision_prompt, softmax
 
 
 def main():

@@ -2,8 +2,8 @@ import json
 
 import pytest
 
-from gemma_decisions.comparison import discrete_answers, generation_task, parse_generated
-from gemma_decisions.core import Choice, Independent, Noul, Score
+from gemma_rlcd.comparison import discrete_answers, generation_task, parse_generated
+from gemma_rlcd.core import Choice, Independent, Noul, Score
 
 
 def questions():
