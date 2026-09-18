@@ -4,9 +4,11 @@ Parallel classification, grading, and label probabilities over **text, images, s
 
 Give the model one input and a set of questions. It encodes the input once, scores the allowed answers in GPU batches, and returns structured results with probability distributions.
 
-[![28 decisions from one support ticket](docs/assets/demo-poster.jpg)](docs/assets/demo.mp4)
+https://github.com/user-attachments/assets/2dcac6b3-4dbe-4b1a-94fe-6c015f7defb0
 
-**[Watch the demo](docs/assets/demo.mp4)** · 28 matching outputs · 4.41 s vs 15.66 s · 3.55× faster on the support-triage workload.
+**128 visual checks, streaming live.** In this recorded simultaneous run: **11.57 s vs 54.10 s · 4.67× faster · 120/128 matching answers**. Both paths share one GPU. The full startup pause and original elapsed time are preserved.
+
+[Download the video](docs/assets/live-demo.mp4) · [Recorded results](reports/live-visual-demo.json)
 
 ## Quick start
 
@@ -36,6 +38,8 @@ Use the full [multimodal checkpoint](https://huggingface.co/mlx-community/gemma-
 ### Live visual demo
 
 Open **http://127.0.0.1:8787/demo** for 32, 64, or 128 checks over an image or video. Use the included street photo or upload your own media. The parallel scorer streams completed field batches; normal Gemma streams its generated JSON. Live clocks, per-check probabilities, answer differences, and downloadable events make the comparison inspectable. Both paths start together and stream side by side, sharing the resident weights with separate processors and KV caches. Timings measure concurrent completion on one GPU, including resource contention. The playground’s ordinary comparison remains sequential for isolated timings.
+
+The first answer follows input preparation and a full multimodal prefill. The UI shows these stages, first-token time, and first-decision time separately. Repeated runs reuse compiled field definitions; media, input KV state, and answers are recomputed. Use **Focus view** to see all 128 outputs together.
 
 ## How it works
 

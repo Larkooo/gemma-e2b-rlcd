@@ -36,11 +36,12 @@ def candidate_fields(questions: dict) -> list[JSONField]:
     return fields
 
 
-def compile_field(tokenizer, field: JSONField, prompt: str) -> FieldTokens:
+def compile_field(tokenizer, field: JSONField, prompt: str, *, base_ids=None) -> FieldTokens:
     # Whitespace is part of the model's answer context. In particular, scoring
     # digits immediately after ':' instead of ': ' can score a whitespace slot.
     opening = "".join("{" + json.dumps(key, ensure_ascii=False) + ": " for key in field.path)
-    base_ids = tokenizer.encode(prompt, add_special_tokens=False)
+    if base_ids is None:
+        base_ids = tokenizer.encode(prompt, add_special_tokens=False)
     sequences = []
     for value in field.values:
         suffix = opening + json.dumps(value, ensure_ascii=False)

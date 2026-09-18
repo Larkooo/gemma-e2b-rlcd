@@ -68,3 +68,9 @@ Video sampling can miss brief events. The limits describe the current serving co
 | `--backend head` | `DecisionHeadBackend` | Candidate-conditioned head; requires a checkpoint |
 
 The cached path assigns tokenizer-verified codes to options and scores per-question suffixes against shared state. Historical answer-code and catalog measurements are retained for reproducing those experiments. The [training guide](training.md) describes the head separately.
+
+## Streaming startup
+
+The visual demo starts scoring and normal generation together on separate worker streams with separate processors and KV caches. Both process the complete media and question schema before producing answers; the UI reports input preparation, prefill, first token, and first completed decision separately. End-to-end concurrent timings include GPU contention.
+
+The scorer encodes the common prompt once for field compilation and keeps up to eight compiled schemas in an LRU cache. Cache keys include the complete prompt and candidate definitions. This cache contains only tokenized field definitions; every request recomputes media features, input KV state, and answer probabilities. Boundary-merge validation and complete-candidate scoring remain unchanged.

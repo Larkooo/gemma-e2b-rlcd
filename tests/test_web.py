@@ -474,7 +474,7 @@ def test_streaming_comparison_orders_events_and_cleans_uploads(playground, monke
 
     client, _, directory = playground
 
-    def generate(backend, state, questions, on_token=None):
+    def generate(backend, state, questions, on_token=None, on_progress=None):
         on_token('{"animal":', 1)
         on_token('"cat"}', 2)
         return {

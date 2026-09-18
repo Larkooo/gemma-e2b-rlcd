@@ -117,7 +117,7 @@ def test_concurrent_comparison_streams_both_paths_before_either_finishes(monkeyp
         def symbols(self, count):
             return ("A", "B")
 
-        def score_questions(self, state, questions, on_scores):
+        def score_questions(self, state, questions, on_scores, on_progress=None):
             assert generated.wait(2), "Generation never started alongside scoring"
             result = TokenScores((5, 0), 1, 20)
             on_scores([(0, result)])
@@ -126,7 +126,7 @@ def test_concurrent_comparison_streams_both_paths_before_either_finishes(monkeyp
 
     backend = Backend()
 
-    def generate(worker, state, questions, on_token):
+    def generate(worker, state, questions, on_token, on_progress=None):
         assert worker.processor is not backend.processor
         assert worker.processor.tokenizer is not backend.processor.tokenizer
         on_token('{"visible":', 1)

@@ -2,6 +2,7 @@
 
 import math
 import time
+from collections import OrderedDict
 
 from .cached_backend import CachedMLXBackend, PreparedState
 from .comparison import prepare_generation
@@ -67,12 +68,28 @@ class JSONMLXBackend(CachedMLXBackend):
                 on_scores(completed)
         return output, batches
 
-    def score_questions(self, state, questions, on_scores=None):
+    def score_questions(self, state, questions, on_scores=None, on_progress=None):
         started = time.perf_counter()
+        if on_progress:
+            on_progress("preparing", None)
         prompt, inputs = prepare_generation(self, state, questions)
-        fields = [
-            compile_field(self.tokenizer, field, prompt) for field in candidate_fields(questions)
-        ]
+        candidates = tuple(candidate_fields(questions))
+        key = (prompt, candidates)
+        if not hasattr(self, "_field_cache"):
+            self._field_cache = OrderedDict()
+        fields = self._field_cache.get(key)
+        schema_cache_hit = fields is not None
+        if fields is None:
+            base_ids = self.tokenizer.encode(prompt, add_special_tokens=False)
+            fields = [
+                compile_field(self.tokenizer, field, prompt, base_ids=base_ids)
+                for field in candidates
+            ]
+            self._field_cache[key] = fields
+            if len(self._field_cache) > 8:
+                self._field_cache.popitem(last=False)
+        else:
+            self._field_cache.move_to_end(key)
         prefix_tokens = int(inputs["input_ids"].shape[1])
         if any(
             prefix_tokens + len(field.prefix) + max(map(len, field.candidates))
@@ -84,8 +101,12 @@ class JSONMLXBackend(CachedMLXBackend):
             )
         prepared = PreparedState(inputs, [], prefix_tokens)
         processed = time.perf_counter()
+        if on_progress:
+            on_progress("prefill", prefix_tokens)
         prefix_cache = self.prefill(prepared)
         prefilled = time.perf_counter()
+        if on_progress:
+            on_progress("scoring", prefix_tokens)
         self.last_stats = {}
         scores = [None] * len(fields)
         single = [
@@ -136,6 +157,7 @@ class JSONMLXBackend(CachedMLXBackend):
             "execution": "shared_json_prefix_gpu_batched_fields",
             "prefix_prefills": 1,
             "prefix_tokens": prefix_tokens,
+            "schema_cache_hit": schema_cache_hit,
             "primitive_fields": len(fields),
             "question_suffix_tokens": [len(field.prefix) for field in fields],
             "candidate_token_lengths": [

@@ -144,13 +144,19 @@ def prepare_generation(backend, state: State, questions: dict) -> tuple[str, dic
     return prompt, inputs
 
 
-def generate_answers(backend, state: State, questions: dict, on_token=None) -> dict:
+def generate_answers(
+    backend, state: State, questions: dict, on_token=None, on_progress=None
+) -> dict:
     from mlx_vlm import generate, stream_generate
 
     started = time.perf_counter()
+    if on_progress:
+        on_progress("preparing", None)
     prompt, inputs = prepare_generation(backend, state, questions)
     budget = output_budget(backend.tokenizer, questions)
     prepared = time.perf_counter()
+    if on_progress:
+        on_progress("prefill", int(inputs["input_ids"].shape[-1]))
     options = dict(
         **inputs,
         max_tokens=budget,
@@ -166,6 +172,8 @@ def generate_answers(backend, state: State, questions: dict, on_token=None) -> d
         parts = []
         generated = None
         for chunk in stream_generate(backend.model, backend.processor, prompt, **options):
+            if generated is None and on_progress:
+                on_progress("generating", chunk.prompt_tokens)
             generated = chunk
             parts.append(chunk.text)
             on_token(chunk.text, chunk.generation_tokens)
@@ -266,10 +274,21 @@ def compare(
                 }
             )
 
+        def on_progress(stage, input_tokens):
+            emit(
+                {
+                    "type": "progress",
+                    "method": method,
+                    "stage": stage,
+                    "input_tokens": input_tokens,
+                    "seconds": media_seconds + time.perf_counter() - started,
+                }
+            )
+
         if method == "parallel":
             engine = DecisionEngine(worker_backend)
             output = (
-                engine.system_one(state, questions, on_answer=on_answer)
+                engine.system_one(state, questions, on_answer=on_answer, on_progress=on_progress)
                 if emit
                 else engine.system_one(state, questions)
             )
@@ -282,7 +301,9 @@ def compare(
             )
         else:
             output = (
-                generate_answers(worker_backend, state, questions, on_token=on_token)
+                generate_answers(
+                    worker_backend, state, questions, on_token=on_token, on_progress=on_progress
+                )
                 if emit
                 else generate_answers(worker_backend, state, questions)
             )

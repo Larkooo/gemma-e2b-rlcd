@@ -216,7 +216,9 @@ class DecisionEngine:
     def decide(self, state: State, question: Question) -> dict:
         return self.system_one(state, {"answer": question})["answers"]["answer"]
 
-    def system_one(self, state: State, questions: Mapping[str, Question], on_answer=None) -> dict:
+    def system_one(
+        self, state: State, questions: Mapping[str, Question], on_answer=None, on_progress=None
+    ) -> dict:
         if not questions:
             raise ValueError("At least one question is required")
         jobs = []
@@ -268,11 +270,12 @@ class DecisionEngine:
                 )
 
         if question_score is not None:
-            scores = (
-                question_score(state, questions, on_scores=completed_scores)
-                if on_answer
-                else question_score(state, questions)
-            )
+            callbacks = {}
+            if on_answer:
+                callbacks["on_scores"] = completed_scores
+            if on_progress:
+                callbacks["on_progress"] = on_progress
+            scores = question_score(state, questions, **callbacks)
         elif batch_score is not None:
             scores = batch_score(state, requests)
         else:

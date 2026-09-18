@@ -3,6 +3,7 @@ const $ = (selector) => document.querySelector(selector);
 const escapeHTML = (value) => String(value).replace(/[&<>"']/g, (char) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));
 let config, media, mediaURL, active = false, ready = false, controller, finalResult = null;
 let checks = [], rows = new Map(), completed = {parallel: new Map(), normal: new Map()};
+let firstToken = null;
 let clocks = {}, rawText = "", parallelLines = [], events = [], firstAnswer = {}, frame = null, sampleVersion = 0;
 
 function error(message) { $("#error").textContent = message; $("#error").hidden = !message; }
@@ -39,20 +40,21 @@ async function sample() {
   finally { $("#sample").disabled = active; }
 }
 function reset() {
-  finalResult = null; rawText = ""; parallelLines = []; events = []; firstAnswer = {}; clocks = {};
+  finalResult = null; firstToken = null; $("#normal-token-first").textContent = "First token —"; rawText = ""; parallelLines = []; events = []; firstAnswer = {}; clocks = {};
   completed = {parallel: new Map(), normal: new Map()};
   $("#headline-count").textContent = count();
   $("#parallel-stream").textContent = "Answers appear as soon as each batch completes.";
   $("#normal-stream").textContent = "Real token output will stream here.";
   $("#token-count").textContent = "0 tokens";
   $("#run-phase").textContent = "Ready";
+  $("#run-note").textContent = "The model loads once. Every comparison uses fresh input state.";
   $("#agreement").textContent = "";
   $("#verdict").textContent = "Upload a scene or try the sample. Results are measured live.";
   $("#export").disabled = true;
   for (const method of ["parallel","normal"]) {
     $(`#${method}-clock`).innerHTML = seconds(0);
     $(`#${method}-state`).textContent = "Waiting";
-    $(`#${method}-first`).textContent = "First answer —";
+    $(`#${method}-first`).textContent = "First decision —";
     $(`#${method}-progress`).style.width = "0%";
     $(`#${method}-count`).textContent = `0 / ${count()} decisions`;
   }
@@ -83,7 +85,7 @@ function updateDecision(method, path, value, probability, elapsed) {
   row.classList.toggle("different", Boolean(parallel && normal && parallel.value !== normal.value));
   if (firstAnswer[method] === undefined) {
     firstAnswer[method] = elapsed;
-    $(`#${method}-first`).textContent = `First answer ${elapsed.toFixed(2)} s`;
+    $(`#${method}-first`).textContent = `First decision ${elapsed.toFixed(2)} s`;
   }
   $(`#${method}-count`).textContent = `${completed[method].size} / ${count()} decisions`;
   $(`#${method}-progress`).style.width = `${100 * completed[method].size / count()}%`;
@@ -122,6 +124,9 @@ function handle(event) {
   } else if (event.type === "phase_start") {
     if (!clocks[method]) clocks[method] = {running:true, start:performance.now() - event.media_seconds * 1000};
     $(`#${method}-state`).textContent = "Running";
+  } else if (event.type === "progress") {
+    const labels = {preparing:"Preparing input", prefill:`Reading ${(event.input_tokens || 0).toLocaleString()} tokens`, scoring:"Scoring fields", generating:"Generating"};
+    $(`#${method}-state`).textContent = labels[event.stage] || event.stage;
   } else if (event.type === "answer") {
     const path = event.path.join(".");
     const probability = event.answer.probabilities.yes;
@@ -130,6 +135,10 @@ function handle(event) {
     $("#parallel-stream").textContent = parallelLines.join("\n");
     $("#parallel-stream").scrollTop = $("#parallel-stream").scrollHeight;
   } else if (event.type === "token") {
+    if (firstToken === null && event.text) {
+      firstToken = event.seconds;
+      $("#normal-token-first").textContent = `First token ${firstToken.toFixed(2)} s`;
+    }
     rawText += event.text;
     $("#normal-stream").textContent = rawText;
     $("#normal-stream").scrollTop = $("#normal-stream").scrollHeight;
@@ -193,7 +202,7 @@ async function run() {
     }
     if(pending.trim()) handle(JSON.parse(pending));
     if(!finalResult) throw new Error("The stream ended before the comparison completed.");
-    finalResult = {request:spec,response:finalResult,stream_events:events,first_answer_seconds:firstAnswer};
+    finalResult = {request:spec,response:finalResult,stream_events:events,first_answer_seconds:firstAnswer,first_token_seconds:firstToken};
     $("#run-note").textContent = "Complete. Export preserves the answers, events, and measured timings.";
   } catch(failure) {
     controller.abort();
@@ -216,6 +225,11 @@ async function status() {
   } catch { ready=false; $("#model-status").textContent="Server disconnected"; }
   syncButtons();
 }
+$("#focus").addEventListener("click",()=>{
+  const focused = document.body.classList.toggle("focused");
+  $("#focus").setAttribute("aria-pressed",String(focused));
+  $("#focus").textContent = focused ? "Standard view" : "Focus view";
+});
 $("#run").addEventListener("click",run);
 $("#stop").addEventListener("click",()=>controller?.abort());
 $("#sample").addEventListener("click",sample);

@@ -35,3 +35,43 @@ def test_complete_candidate_likelihood_uses_suffix_and_ignores_padding(batch_siz
     assert sum(batches) == 3
     assert max(batches) <= batch_size
     assert streamed == [[(0, results[0])]]
+
+
+def test_repeated_schema_reuses_only_tokenization_and_still_prefills_each_image(
+    monkeypatch, tmp_path
+):
+    from gemma_rlcd import json_backend
+    from gemma_rlcd.core import Noul, State, TokenScores
+
+    encoded, prefills = [], []
+    backend = JSONMLXBackend.__new__(JSONMLXBackend)
+    backend.tokenizer = SimpleNamespace(
+        encode=lambda text, **kwargs: encoded.append(text) or list(map(ord, text))
+    )
+    backend.max_input_tokens = 8192
+    backend.last_stats = {}
+    monkeypatch.setattr(
+        json_backend,
+        "prepare_generation",
+        lambda backend, state, questions: (
+            "prompt",
+            {"input_ids": SimpleNamespace(shape=(1, 6)), "image": state.images},
+        ),
+    )
+    backend.prefill = lambda prepared: prefills.append(prepared.inputs["image"]) or []
+    backend._sequence_scores = lambda cache, tokens, fields, on_scores: (
+        {index: TokenScores((float(len(prefills)), 0), 1, 10) for index, _ in fields},
+        [2],
+    )
+    questions = {"visible": Noul("Visible?")}
+    paths = [tmp_path / name for name in ("one.jpg", "two.jpg")]
+    for path in paths:
+        path.touch()
+    first = backend.score_questions(State(images=(str(paths[0]),)), questions)
+    assert not backend.last_stats["schema_cache_hit"]
+    count = len(encoded)
+    second = backend.score_questions(State(images=(str(paths[1]),)), questions)
+    assert backend.last_stats["schema_cache_hit"]
+    assert len(encoded) == count
+    assert prefills == [(str(paths[0]),), (str(paths[1]),)]
+    assert first[0].logits != second[0].logits
